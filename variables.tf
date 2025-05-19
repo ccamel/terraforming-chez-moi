@@ -1,0 +1,17 @@
+variable "dsm_host" {
+  description = "The URL of my Synology DSM instance"
+  type        = string
+  sensitive   = true
+}
+
+variable "dsm_user" {
+  description = "DSM username"
+  type        = string
+  sensitive   = true
+}
+
+variable "dsm_password" {
+  description = "DSM password"
+  type        = string
+  sensitive   = true
+}
