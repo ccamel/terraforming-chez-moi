@@ -69,6 +69,11 @@ jobs:
           terraform init
           terraform validate
 
+      - name: Check Terraform files format
+        if: steps.changed-tf-files.outputs.any_changed == 'true'
+        run: |
+          terraform fmt -check -recursive
+
   lint-branch-name:
     runs-on: ubuntu-22.04
     if: github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
