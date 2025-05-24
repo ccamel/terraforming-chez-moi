@@ -4,5 +4,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    assignees:
+      - "ccamel"
     reviewers:
-      - "axone-protocol/maintainers"
+      - "ccamel"
+
+  - package-ecosystem: "terraform"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "ccamel"
+    reviewers:
+      - "ccamel"
