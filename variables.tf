@@ -1,5 +1,5 @@
 variable "dsm_host" {
-  description = "The URL of my Synology DSM instance"
+  description = "The hostname of my Synology DSM instance"
   type        = string
   sensitive   = true
 }
