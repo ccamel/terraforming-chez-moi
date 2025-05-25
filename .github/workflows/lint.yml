@@ -2,10 +2,10 @@ name: Lint
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -41,6 +41,38 @@ jobs:
 
       - name: Lint yaml files
         uses: ibiqlik/action-yamllint@v3.1.1
+
+  validate-terraform:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Find changed terraform files
+        id: changed-tf-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            **/*.tf
+            **/*.tfvars
+            **/*.hcl
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        if: steps.changed-tf-files.outputs.any_changed == 'true'
+        with:
+          terraform_wrapper: false
+
+      - name: Validate Terraform files
+        if: steps.changed-tf-files.outputs.any_changed == 'true'
+        run: |
+          terraform init
+          terraform validate
+
+      - name: Check Terraform files format
+        if: steps.changed-tf-files.outputs.any_changed == 'true'
+        run: |
+          terraform fmt -check -recursive
 
   lint-branch-name:
     runs-on: ubuntu-22.04
