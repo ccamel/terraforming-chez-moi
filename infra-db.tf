@@ -13,29 +13,11 @@ resource "synology_container_project" "infra_db" {
 
   configs = {
     "docker-compose.yml" = {
-      name    = "docker-compose.yml"
-      file    = "docker-compose.yml"
-      content = <<-EOT
-        version: '3.8'
-        services:
-          postgres:
-            image: bitnami/postgresql:17.5.0
-            container_name: postgres
-            restart: always
-            ports:
-              - "55432:5432"
-            env_file:
-              - .env
-            volumes:
-              - ${var.dsm_volume_docker}/postgres/data:/var/lib/postgresql/data
-
-          adminer:
-            image: adminer:5.3.0
-            container_name: adminer
-            restart: always
-            ports:
-              - "8081:8080"
-      EOT
+      name = "docker-compose.yml"
+      file = "docker-compose.yml"
+      content = templatefile("${path.module}/infra-db.docker-compose.yml", {
+        dsm_volume_docker = var.dsm_volume_docker
+      })
     }
     ".env" = {
       name    = ".env"
