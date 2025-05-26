@@ -27,7 +27,7 @@ jobs:
           git_commit_gpgsign: true
 
       - name: Generate Terraform docs
-        uses: terraform-docs/gh-action@v1.4.1
+        uses: terraform-docs/gh-actions@v1.4.1
         with:
           output-file: README.md
           output-method: inject
