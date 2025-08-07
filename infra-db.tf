@@ -1,7 +1,6 @@
 
 resource "synology_filestation_folder" "postgres_data" {
-  name           = "data"
-  path           = "/docker/postgres"
+  path           = "/docker/postgres/data"
   create_parents = true
 }
 
