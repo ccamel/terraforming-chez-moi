@@ -18,41 +18,43 @@ This repository implements a simple GitOps approach for managing my home infrast
 ## Overview
 
 <!-- BEGIN_TF_DOCS -->
-### Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_synology"></a> [synology](#requirement\_synology) | ~> 0.4 |
+## Requirements
 
-### Providers
+| Name                                                                  | Version |
+| --------------------------------------------------------------------- | ------- |
+| <a name="requirement_synology"></a> [synology](#requirement_synology) | ~> 0.4  |
 
-| Name | Version |
-|------|---------|
-| <a name="provider_synology"></a> [synology](#provider\_synology) | 0.4.0 |
+## Providers
 
-### Modules
+| Name                                                            | Version |
+| --------------------------------------------------------------- | ------- |
+| <a name="provider_synology"></a> [synology](#provider_synology) | 0.5.1   |
+
+## Modules
 
 No modules.
 
-### Resources
+## Resources
 
-| Name | Type |
-|------|------|
-| [synology_container_project.infra_db](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project) | resource |
+| Name                                                                                                                                                      | Type     |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| [synology_container_project.infra_db](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)        | resource |
 | [synology_filestation_folder.postgres_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 
-### Inputs
+## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_dsm_host"></a> [dsm\_host](#input\_dsm\_host) | The hostname of my Synology DSM instance | `string` | n/a | yes |
-| <a name="input_dsm_password"></a> [dsm\_password](#input\_dsm\_password) | DSM password | `string` | n/a | yes |
-| <a name="input_dsm_user"></a> [dsm\_user](#input\_dsm\_user) | DSM username | `string` | n/a | yes |
-| <a name="input_dsm_volume_docker"></a> [dsm\_volume\_docker](#input\_dsm\_volume\_docker) | Root path for docker volume on DSM | `string` | `"/volume1/docker"` | no |
-| <a name="input_postgres_password"></a> [postgres\_password](#input\_postgres\_password) | Password for the PostgreSQL service | `string` | n/a | yes |
-| <a name="input_postgres_user"></a> [postgres\_user](#input\_postgres\_user) | Username for the PostgreSQL service | `string` | n/a | yes |
+| Name                                                                                 | Description                              | Type     | Default             | Required |
+| ------------------------------------------------------------------------------------ | ---------------------------------------- | -------- | ------------------- | :------: |
+| <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                            | The hostname of my Synology DSM instance | `string` | n/a                 |   yes    |
+| <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                | DSM password                             | `string` | n/a                 |   yes    |
+| <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                            | DSM username                             | `string` | n/a                 |   yes    |
+| <a name="input_dsm_volume_docker"></a> [dsm_volume_docker](#input_dsm_volume_docker) | Root path for docker volume on DSM       | `string` | `"/volume1/docker"` |    no    |
+| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password) | Password for the PostgreSQL service      | `string` | n/a                 |   yes    |
+| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)             | Username for the PostgreSQL service      | `string` | n/a                 |   yes    |
 
-### Outputs
+## Outputs
 
 No outputs.
+
 <!-- END_TF_DOCS -->

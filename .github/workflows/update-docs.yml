@@ -6,6 +6,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 concurrency:
   group: update-docs-${{ github.ref }}
   cancel-in-progress: true
@@ -16,6 +19,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TERRAFORM_DOC_TOKEN }}
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
@@ -32,5 +37,17 @@ jobs:
           output-file: README.md
           output-method: inject
           output-format: markdown
-          git-push: "true"
-          git-commit-message: "docs(README): update Terraform documentation"
+          git-push: "false"
+
+      - name: Prettiyfy README.md
+        run: |
+          echo "📝 Prettifying README.md"
+          npx prettier@3.0.3 README.md --write
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(README): update Terraform documentation"
+          commit_author: ${{ vars.GIT_AUTHOR_NAME }} <${{ vars.GIT_AUTHOR_EMAIL }}>
+          commit_user_name: ${{ vars.GIT_AUTHOR_NAME }}
+          commit_user_email: ${{ vars.GIT_AUTHOR_EMAIL }}
