@@ -67,13 +67,18 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Install Just
+        uses: extractions/setup-just@v3
+        with:
+          just-version: '1.42.4'
+
       - name: Validate Terraform files
         if: steps.changed-tf-files.outputs.any_changed == 'true'
         run: |
-          terraform init
-          terraform validate
+          just init
+          just validate
 
       - name: Check Terraform files format
         if: steps.changed-tf-files.outputs.any_changed == 'true'
         run: |
-          terraform fmt -check -recursive
+          just check-fmt
