@@ -10,6 +10,8 @@ services:
       - .env
     volumes:
       - ${dsm_volume_docker}/postgres/data:/var/lib/postgresql/data
+    networks:
+      - app_shared
 
   adminer:
     image: adminer:5.3.0
@@ -17,3 +19,9 @@ services:
     restart: always
     ports:
       - "8081:8080"
+    networks:
+      - app_shared
+
+networks:
+  app_shared:
+    driver: bridge
