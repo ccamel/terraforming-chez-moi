@@ -16,8 +16,8 @@ variable "dsm_password" {
   sensitive   = true
 }
 
-variable "dsm_volume_docker" {
-  description = "Root path for docker volume on DSM"
-  default     = "/volume1/docker"
+variable "dsm_volume_projects" {
+  description = "Root path for projects volume on DSM"
+  default     = "/projects"
   sensitive   = false
 }

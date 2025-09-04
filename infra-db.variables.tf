@@ -9,3 +9,15 @@ variable "postgres_password" {
   type        = string
   sensitive   = true
 }
+
+variable "postgres_published_port" {
+  description = "Published port on the Synology host for PostgreSQL"
+  type        = number
+  default     = 55432
+}
+
+variable "adminer_published_port" {
+  description = "Published port on the Synology host for Adminer web UI"
+  type        = number
+  default     = 8081
+}
