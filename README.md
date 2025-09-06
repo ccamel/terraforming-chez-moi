@@ -15,6 +15,15 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 This repository implements a simple GitOps approach for managing my home infrastructure: desired state is defined in [Terraform](https://developer.hashicorp.com/terraform), versioned in Git, and applied through automated workflows.
 
+## Usage
+
+This project uses [`just`](https://github.com/casey/just) as a command runner.
+
+To see the available recipes, run: `just -l`.
+
+<!-- BEGIN_JUST_RECIPES -->
+<!-- END_JUST_RECIPES -->
+
 ## Overview
 
 <!-- BEGIN_TF_DOCS -->
