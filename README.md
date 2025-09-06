@@ -22,6 +22,20 @@ This project uses [`just`](https://github.com/casey/just) as a command runner.
 To see the available recipes, run: `just -l`.
 
 <!-- BEGIN_JUST_RECIPES -->
+
+```text
+Available recipes:
+    apply     # Apply infrastructure changes
+    check-fmt # Check Terraform code formatting
+    default   # Default recipe
+    destroy   # Destroy infrastructure
+    fmt       # Format Terraform code
+    init      # Initialize Terraform
+    plan      # Plan infrastructure changes
+    tools     # Ensure required tools are available for recipes in this Justfile.
+    validate  # Validate Terraform configuration
+```
+
 <!-- END_JUST_RECIPES -->
 
 ## Overview
