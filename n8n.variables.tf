@@ -28,19 +28,19 @@ variable "n8n_postgres_db" {
   description = "PostgreSQL database name for n8n"
   type        = string
   sensitive   = true
-  default     = "n8n"
+  default     = "n8n-db-name"
 }
 
 variable "n8n_postgres_user" {
   description = "PostgreSQL username for n8n"
   type        = string
   sensitive   = true
-  default     = "n8n"
+  default     = "n8n-db-user"
 }
 
 variable "n8n_postgres_password" {
   description = "PostgreSQL password for n8n"
   type        = string
   sensitive   = true
-  default     = "n8n"
+  default     = "n8n-db-password"
 }
