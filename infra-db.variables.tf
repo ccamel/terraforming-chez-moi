@@ -1,14 +1,14 @@
 variable "postgres_user" {
   description = "Username for the PostgreSQL service"
   type        = string
-  default     = "postgres"
+  default     = "postgres-user"
   sensitive   = true
 }
 
 variable "postgres_password" {
   description = "Password for the PostgreSQL service"
   type        = string
-  default     = "postgres"
+  default     = "postgres-password"
   sensitive   = true
 }
 
