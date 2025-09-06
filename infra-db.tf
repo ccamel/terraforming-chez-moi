@@ -49,11 +49,6 @@ resource "synology_container_project" "infra_db" {
       image = "bitnami/postgresql:17.5.0"
       name  = "infra-db-postgres"
 
-      ports = [{
-        target    = 5432
-        published = var.postgres_published_port
-      }]
-
       environment = {
         POSTGRESQL_USERNAME = var.postgres_user
         POSTGRESQL_PASSWORD = var.postgres_password
@@ -79,8 +74,12 @@ resource "synology_container_project" "infra_db" {
 
       restart = "unless-stopped"
 
-      logging = { driver = "json-file" }
+      networks = {
+        infra_net = {
+        }
+      }
 
+      logging = { driver = "json-file" }
       depends_on = {
         permfix = {
           condition = "service_completed_successfully"
@@ -92,14 +91,21 @@ resource "synology_container_project" "infra_db" {
       image = "adminer:5.3.0"
       name  = "infra-db-adminer"
 
-      environment = {
-        ADMINER_DEFAULT_SERVER = "postgres"
-      }
-
       ports = [{
         target    = 8080
         published = var.adminer_published_port
       }]
+
+      environment = {
+        ADMINER_DEFAULT_SERVER = "postgres"
+      }
+
+      restart = "unless-stopped"
+
+      networks = {
+        infra_net = {}
+        edge_net  = {}
+      }
 
       depends_on = {
         "postgres" = {
@@ -107,9 +113,24 @@ resource "synology_container_project" "infra_db" {
           restart   = true
         }
       }
-      restart = "unless-stopped"
 
       logging = { driver = "json-file" }
+    }
+  }
+
+  networks = {
+    infra_net = {
+      attachable = true
+      driver     = "bridge"
+      name       = "infra"
+      internal   = true
+    }
+
+    edge_net = {
+      attachable = true
+      driver     = "bridge"
+      name       = "edge"
+      internal   = false
     }
   }
 
