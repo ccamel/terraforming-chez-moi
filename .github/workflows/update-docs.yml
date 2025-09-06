@@ -70,7 +70,7 @@ jobs:
           npx prettier@3.0.3 README.md --write
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "docs(README): update documentation"
           commit_author: ${{ vars.GIT_AUTHOR_NAME }} <${{ vars.GIT_AUTHOR_EMAIL }}>
