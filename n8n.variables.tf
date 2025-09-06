@@ -14,23 +14,27 @@ variable "n8n_webhook_url" {
   description = "Public URL for n8n webhooks"
   type        = string
   sensitive   = true
+  default     = "localhost:5678"
 }
 
 variable "n8n_encryption_key" {
   description = "Encryption key for n8n sensitive data"
   type        = string
   sensitive   = true
+  default     = "my-32-character-random-string"
 }
 
 variable "n8n_postgres_db" {
   description = "PostgreSQL database name for n8n"
   type        = string
+  sensitive   = true
   default     = "n8n"
 }
 
 variable "n8n_postgres_user" {
   description = "PostgreSQL username for n8n"
   type        = string
+  sensitive   = true
   default     = "n8n"
 }
 
@@ -38,4 +42,5 @@ variable "n8n_postgres_password" {
   description = "PostgreSQL password for n8n"
   type        = string
   sensitive   = true
+  default     = "n8n"
 }
