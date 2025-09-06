@@ -55,13 +55,13 @@ No modules.
 | <a name="input_dsm_volume_projects"></a> [dsm_volume_projects](#input_dsm_volume_projects)          | Root path for projects volume on DSM                                  | `string` | `"/projects"`                     |    no    |
 | <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)             | Encryption key for n8n sensitive data                                 | `string` | `"my-32-character-random-string"` |    no    |
 | <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                           | Host/IP that n8n should bind to (passed to the container as N8N_HOST) | `string` | `"0.0.0.0"`                       |    no    |
-| <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                      | PostgreSQL database name for n8n                                      | `string` | `"n8n"`                           |    no    |
-| <a name="input_n8n_postgres_password"></a> [n8n_postgres_password](#input_n8n_postgres_password)    | PostgreSQL password for n8n                                           | `string` | `"n8n"`                           |    no    |
-| <a name="input_n8n_postgres_user"></a> [n8n_postgres_user](#input_n8n_postgres_user)                | PostgreSQL username for n8n                                           | `string` | `"n8n"`                           |    no    |
+| <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                      | PostgreSQL database name for n8n                                      | `string` | `"n8n-db-name"`                   |    no    |
+| <a name="input_n8n_postgres_password"></a> [n8n_postgres_password](#input_n8n_postgres_password)    | PostgreSQL password for n8n                                           | `string` | `"n8n-db-password"`               |    no    |
+| <a name="input_n8n_postgres_user"></a> [n8n_postgres_user](#input_n8n_postgres_user)                | PostgreSQL username for n8n                                           | `string` | `"n8n-db-user"`                   |    no    |
 | <a name="input_n8n_published_port"></a> [n8n_published_port](#input_n8n_published_port)             | Published port on the Synology host for n8n web UI                    | `number` | `5678`                            |    no    |
 | <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                      | Public URL for n8n webhooks                                           | `string` | `"localhost:5678"`                |    no    |
-| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                | Password for the PostgreSQL service                                   | `string` | `"postgres"`                      |    no    |
-| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                            | Username for the PostgreSQL service                                   | `string` | `"postgres"`                      |    no    |
+| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                | Password for the PostgreSQL service                                   | `string` | `"postgres-password"`             |    no    |
+| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                            | Username for the PostgreSQL service                                   | `string` | `"postgres-user"`                 |    no    |
 
 ## Outputs
 
