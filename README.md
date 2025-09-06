@@ -40,20 +40,28 @@ No modules.
 | Name                                                                                                                                                        | Type     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | [synology_container_project.infra_db](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)          | resource |
+| [synology_container_project.n8n](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)               | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)        | resource |
 
 ## Inputs
 
-| Name                                                                                                   | Description                                            | Type     | Default       | Required |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | -------- | ------------- | :------: |
-| <a name="input_adminer_published_port"></a> [adminer_published_port](#input_adminer_published_port)    | Published port on the Synology host for Adminer web UI | `number` | `8081`        |    no    |
-| <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                              | The hostname of my Synology DSM instance               | `string` | n/a           |   yes    |
-| <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                                  | DSM password                                           | `string` | n/a           |   yes    |
-| <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                              | DSM username                                           | `string` | n/a           |   yes    |
-| <a name="input_dsm_volume_projects"></a> [dsm_volume_projects](#input_dsm_volume_projects)             | Root path for projects volume on DSM                   | `string` | `"/projects"` |    no    |
-| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                   | Password for the PostgreSQL service                    | `string` | n/a           |   yes    |
-| <a name="input_postgres_published_port"></a> [postgres_published_port](#input_postgres_published_port) | Published port on the Synology host for PostgreSQL     | `number` | `55432`       |    no    |
-| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                               | Username for the PostgreSQL service                    | `string` | n/a           |   yes    |
+| Name                                                                                                | Description                                                           | Type     | Default                           | Required |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | -------- | --------------------------------- | :------: |
+| <a name="input_adminer_published_port"></a> [adminer_published_port](#input_adminer_published_port) | Published port on the Synology host for Adminer web UI                | `number` | `8081`                            |    no    |
+| <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                           | The hostname of my Synology DSM instance                              | `string` | n/a                               |   yes    |
+| <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                               | DSM password                                                          | `string` | n/a                               |   yes    |
+| <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                           | DSM username                                                          | `string` | n/a                               |   yes    |
+| <a name="input_dsm_volume_projects"></a> [dsm_volume_projects](#input_dsm_volume_projects)          | Root path for projects volume on DSM                                  | `string` | `"/projects"`                     |    no    |
+| <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)             | Encryption key for n8n sensitive data                                 | `string` | `"my-32-character-random-string"` |    no    |
+| <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                           | Host/IP that n8n should bind to (passed to the container as N8N_HOST) | `string` | `"0.0.0.0"`                       |    no    |
+| <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                      | PostgreSQL database name for n8n                                      | `string` | `"n8n"`                           |    no    |
+| <a name="input_n8n_postgres_password"></a> [n8n_postgres_password](#input_n8n_postgres_password)    | PostgreSQL password for n8n                                           | `string` | `"n8n"`                           |    no    |
+| <a name="input_n8n_postgres_user"></a> [n8n_postgres_user](#input_n8n_postgres_user)                | PostgreSQL username for n8n                                           | `string` | `"n8n"`                           |    no    |
+| <a name="input_n8n_published_port"></a> [n8n_published_port](#input_n8n_published_port)             | Published port on the Synology host for n8n web UI                    | `number` | `5678`                            |    no    |
+| <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                      | Public URL for n8n webhooks                                           | `string` | `"localhost:5678"`                |    no    |
+| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                | Password for the PostgreSQL service                                   | `string` | `"postgres"`                      |    no    |
+| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                            | Username for the PostgreSQL service                                   | `string` | `"postgres"`                      |    no    |
 
 ## Outputs
 
