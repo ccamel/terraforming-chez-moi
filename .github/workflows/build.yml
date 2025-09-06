@@ -38,5 +38,3 @@ jobs:
           TF_VAR_dsm_host: ${{ secrets.DSM_HOST }}
           TF_VAR_dsm_user: ${{ secrets.DSM_USER }}
           TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
-          TF_VAR_postgres_user: ${{ secrets.POSTGRES_USER }}
-          TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}

@@ -1,19 +1,15 @@
 variable "postgres_user" {
   description = "Username for the PostgreSQL service"
   type        = string
+  default     = "postgres"
   sensitive   = true
 }
 
 variable "postgres_password" {
   description = "Password for the PostgreSQL service"
   type        = string
+  default     = "postgres"
   sensitive   = true
-}
-
-variable "postgres_published_port" {
-  description = "Published port on the Synology host for PostgreSQL"
-  type        = number
-  default     = 55432
 }
 
 variable "adminer_published_port" {
