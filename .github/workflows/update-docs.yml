@@ -31,6 +31,11 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
+      - name: Install Just
+        uses: extractions/setup-just@v3
+        with:
+          just-version: '1.42.4'
+
       - name: Generate Terraform docs
         uses: terraform-docs/gh-actions@v1.4.1
         with:
@@ -38,6 +43,26 @@ jobs:
           output-method: inject
           output-format: markdown
           git-push: "false"
+
+      - name: Generate Just recipes
+        run: |
+          echo "📝 Generating Just recipes"
+
+          CONTENT=$(just -l)
+          awk '
+          /<!-- BEGIN_JUST_RECIPES -->/ {
+              print
+              print "``` text"
+              system("just -l")
+              print "```"
+              skip = 1
+              next
+          }
+          /<!-- END_JUST_RECIPES -->/ {
+              skip = 0
+          }
+          !skip
+          ' README.md > README.tmp && mv README.tmp README.md
 
       - name: Prettiyfy README.md
         run: |
@@ -47,7 +72,7 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "docs(README): update Terraform documentation"
+          commit_message: "docs(README): update documentation"
           commit_author: ${{ vars.GIT_AUTHOR_NAME }} <${{ vars.GIT_AUTHOR_EMAIL }}>
           commit_user_name: ${{ vars.GIT_AUTHOR_NAME }}
           commit_user_email: ${{ vars.GIT_AUTHOR_EMAIL }}
