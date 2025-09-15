@@ -54,7 +54,7 @@ jobs:
 
       - name: Find changed terraform files
         id: changed-tf-files
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             **/*.tf
