@@ -52,7 +52,7 @@ Available recipes:
 
 | Name                                                            | Version |
 | --------------------------------------------------------------- | ------- |
-| <a name="provider_synology"></a> [synology](#provider_synology) | 0.5.1   |
+| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.0   |
 
 ## Modules
 
