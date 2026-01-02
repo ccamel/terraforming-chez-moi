@@ -46,7 +46,7 @@ resource "synology_container_project" "infra_db" {
 
 
     "postgres" = {
-      image = "bitnami/postgresql:17.5.0"
+      image = "bitnamilegacy/postgresql:17.5.0"
       name  = "infra-db-postgres"
 
       environment = {
