@@ -99,7 +99,7 @@ resource "synology_container_project" "n8n" {
     }
 
     "n8n" = {
-      image = "n8nio/n8n:1.110.1-amd64"
+      image = "n8nio/n8n:2.1.5-amd64"
       name  = "n8n-n8n"
 
       ports = [{

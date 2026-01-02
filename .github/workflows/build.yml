@@ -27,7 +27,7 @@ jobs:
       - name: Install Just
         uses: extractions/setup-just@v3
         with:
-          just-version: '1.42.4'
+          just-version: "1.42.4"
 
       - name: Terraform Init
         run: just init
@@ -38,3 +38,6 @@ jobs:
           TF_VAR_dsm_host: ${{ secrets.DSM_HOST }}
           TF_VAR_dsm_user: ${{ secrets.DSM_USER }}
           TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
+          # -- bobine keys for build only --
+          TF_VAR_bobine_ed25519_private_key_hex: "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          TF_VAR_bobine_ed25519_public_key_hex: "0000000000000000000000000000000000000000000000000000000000000000"
