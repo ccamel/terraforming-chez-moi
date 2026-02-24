@@ -62,7 +62,7 @@ jobs:
             **/*.hcl
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         if: steps.changed-tf-files.outputs.any_changed == 'true'
         with:
           terraform_wrapper: false
