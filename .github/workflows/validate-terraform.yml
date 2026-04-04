@@ -1,0 +1,50 @@
+name: Validate / Terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validate-terraform.yml'
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.hcl'
+      - 'justfile'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/validate-terraform.yml'
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.hcl'
+      - 'justfile'
+  workflow_dispatch:
+
+concurrency:
+  group: validate-terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-terraform:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+      - name: Install Just
+        uses: extractions/setup-just@v3
+        with:
+          just-version: '1.42.4'
+
+      - name: Validate Terraform files
+        run: |
+          just init
+          just validate
+
+      - name: Check Terraform files format
+        run: |
+          just check-fmt
