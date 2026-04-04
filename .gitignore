@@ -6,3 +6,5 @@ terraform.tfstate.backup
 .terraform.tfstate.lock.info
 .bin/
 .tfsecrets/
+__pycache__/
+*.py[cod]

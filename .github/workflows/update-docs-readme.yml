@@ -8,6 +8,8 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.hcl'
+      - '.github/scripts/**'
+      - '.github/python/requirements.txt'
       - '.terraform-docs.yml'
       - 'justfile'
   workflow_dispatch:
@@ -42,6 +44,12 @@ jobs:
         with:
           just-version: '1.42.4'
 
+      - name: Install documentation dependencies
+        run: |
+          python3 -m venv .venv-docs
+          . .venv-docs/bin/activate
+          python3 -m pip install --disable-pip-version-check -r .github/python/requirements.txt
+
       - name: Generate Terraform docs
         uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
         with:
@@ -68,6 +76,11 @@ jobs:
           }
           !skip
           ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Generate deployed services overview
+        run: |
+          . .venv-docs/bin/activate
+          python3 .github/scripts/render_readme_overview.py README.md
 
       - name: Prettify README.md
         run: |
