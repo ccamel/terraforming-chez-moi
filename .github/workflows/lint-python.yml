@@ -1,0 +1,44 @@
+name: Lint / Python
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/lint-python.yml'
+      - '.github/scripts/**/*.py'
+      - '.github/python/requirements.txt'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/lint-python.yml'
+      - '.github/scripts/**/*.py'
+      - '.github/python/requirements.txt'
+  workflow_dispatch:
+
+concurrency:
+  group: lint-python-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-python:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Install Python lint dependencies
+        run: |
+          python3 -m venv .venv-python
+          . .venv-python/bin/activate
+          python3 -m pip install --disable-pip-version-check -r .github/python/requirements.txt
+
+      - name: Lint Python files
+        run: |
+          . .venv-python/bin/activate
+          ruff check .github/scripts
+          ruff format --check .github/scripts
+
+      - name: Compile Python files
+        run: |
+          . .venv-python/bin/activate
+          python3 -m compileall .github/scripts
