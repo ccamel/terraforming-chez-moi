@@ -29,6 +29,13 @@ concurrency:
 jobs:
   build-terraform:
     runs-on: ubuntu-22.04
+    env:
+      TF_VAR_dsm_host: ${{ secrets.DSM_HOST }}
+      TF_VAR_dsm_user: ${{ secrets.DSM_USER }}
+      TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
+      # -- bobine keys for build only --
+      TF_VAR_bobine_ed25519_private_key_hex: '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+      TF_VAR_bobine_ed25519_public_key_hex: '0000000000000000000000000000000000000000000000000000000000000000'
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -44,12 +51,19 @@ jobs:
       - name: Terraform Init
         run: just init
 
+      - name: Check DSM availability
+        run: |
+          if [[ -z "${TF_VAR_dsm_host}" || -z "${TF_VAR_dsm_user}" || -z "${TF_VAR_dsm_password}" ]]; then
+            echo "::error::Missing DSM credentials in GitHub Actions secrets."
+            exit 1
+          fi
+
+          if curl --silent --show-error --insecure --connect-timeout 5 --max-time 10 "https://${TF_VAR_dsm_host}" >/dev/null; then
+            exit 0
+          fi
+
+          echo "::error::DSM is not reachable from this GitHub-hosted runner."
+          exit 1
+
       - name: Terraform Plan
         run: just plan
-        env:
-          TF_VAR_dsm_host: ${{ secrets.DSM_HOST }}
-          TF_VAR_dsm_user: ${{ secrets.DSM_USER }}
-          TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
-          # -- bobine keys for build only --
-          TF_VAR_bobine_ed25519_private_key_hex: '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-          TF_VAR_bobine_ed25519_public_key_hex: '0000000000000000000000000000000000000000000000000000000000000000'
