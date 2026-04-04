@@ -16,18 +16,18 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository currently declares **5 Synology container projects** and **6 exposed runtime services**.
+This repository manages **6 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
-| Project          | Service    | Image Repo                       | Image                                   | Exposure                                           | Persistence           |
-| ---------------- | ---------- | -------------------------------- | --------------------------------------- | -------------------------------------------------- | --------------------- |
-| `bobine`         | `bobine`   | `denoland/deno`                  | `denoland/deno:debian-2.6.3`            | `bobine_published_port (default: 8082)` -> `8080`  | `/app/local`          |
-| `infra-db`       | `adminer`  | `adminer`                        | `adminer:5.3.0`                         | `adminer_published_port (default: 8081)` -> `8080` | none                  |
-| `infra-db`       | `postgres` | `bitnamilegacy/postgresql`       | `bitnamilegacy/postgresql:17.5.0`       | internal only                                      | `/bitnami/postgresql` |
-| `n8n`            | `n8n`      | `n8nio/n8n`                      | `n8nio/n8n:2.1.5-amd64`                 | `n8n_published_port (default: 5678)` -> `5678`     | `/home/node/.n8n`     |
-| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` | `42617` -> `42617`                                 | `/zeroclaw-data`      |
-| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` | `42618` -> `42617`                                 | `/zeroclaw-data`      |
+| Project          | Service    | Image Repo                       | Image                                   |
+| ---------------- | ---------- | -------------------------------- | --------------------------------------- |
+| `bobine`         | `bobine`   | `denoland/deno`                  | `denoland/deno:debian-2.6.3`            |
+| `infra-db`       | `adminer`  | `adminer`                        | `adminer:5.3.0`                         |
+| `infra-db`       | `postgres` | `bitnamilegacy/postgresql`       | `bitnamilegacy/postgresql:17.5.0`       |
+| `n8n`            | `n8n`      | `n8nio/n8n`                      | `n8nio/n8n:2.1.5-amd64`                 |
+| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` |
+| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` |
 
 ### Platform Building Blocks
 

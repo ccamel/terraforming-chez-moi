@@ -20,7 +20,6 @@ ROOT = Path(__file__).resolve().parents[2]
 @dataclass
 class EvalContext:
     variables: dict[str, Any]
-    default_variables: set[str]
     locals: dict[str, Any]
 
 
@@ -30,8 +29,6 @@ class ServiceRecord:
     name: str
     image: str
     image_repository: str
-    exposure: str
-    persistence: str
     is_runtime: bool
     networks: list[str]
 
@@ -59,13 +56,10 @@ def build_context(
     module_data: dict[str, list[Any]], overrides: dict[str, Any] | None = None
 ) -> EvalContext:
     variables = collect_variable_defaults(module_data)
-    default_variables = set(variables)
     if overrides:
         variables.update(overrides)
 
-    ctx = EvalContext(
-        variables=variables, default_variables=default_variables, locals={}
-    )
+    ctx = EvalContext(variables=variables, locals={})
     for block in module_data.get("locals", []):
         for name, value in block.items():
             ctx.locals[name] = evaluate(value, ctx)
@@ -111,49 +105,12 @@ def stringify(value: Any, fallback: str | None = None) -> str:
     return str(value)
 
 
-def render_variable_binding(value: Any, ctx: EvalContext) -> str:
-    if isinstance(value, str) and value.startswith("${var.") and value.endswith("}"):
-        name = value[6:-1]
-        if name in ctx.default_variables:
-            default = ctx.variables.get(name)
-            return f"{name} (default: {default})"
-        return stringify(ctx.variables.get(name, name))
-    return stringify(evaluate(value, ctx))
-
-
 def extract_image_repository(image: str) -> str:
     return image.split("@", 1)[0].split(":", 1)[0]
 
 
 def extract_image_family(image_repository: str) -> str:
     return image_repository.rsplit("/", 1)[-1]
-
-
-def render_exposure(service: dict[str, Any], ctx: EvalContext) -> str:
-    ports = service.get("ports", [])
-    if not ports:
-        return "internal only"
-
-    rendered = []
-    for port in ports:
-        published = render_variable_binding(port.get("published"), ctx)
-        target = stringify(evaluate(port.get("target"), ctx))
-        rendered.append(f"`{published}` -> `{target}`")
-    return "<br>".join(rendered)
-
-
-def render_persistence(service: dict[str, Any], ctx: EvalContext) -> str:
-    volumes = service.get("volumes", [])
-    if not volumes:
-        return "none"
-
-    targets = []
-    for volume in volumes:
-        if volume.get("type") != "bind":
-            continue
-        targets.append(f"`{stringify(evaluate(volume.get('target'), ctx))}`")
-
-    return "<br>".join(targets) if targets else "none"
 
 
 def render_networks(
@@ -187,8 +144,6 @@ def collect_project_services(
                         name=service_name,
                         image=image,
                         image_repository=image_repository,
-                        exposure=render_exposure(service, ctx),
-                        persistence=render_persistence(service, ctx),
                         is_runtime=service.get("restart") != "no",
                         networks=render_networks(service, project_networks, ctx),
                     )
@@ -243,7 +198,6 @@ def build_table(headers: list[str], rows: list[list[str]]) -> str:
 
 def render_overview(services: list[ServiceRecord], providers: list[str]) -> str:
     runtime_services = [service for service in services if service.is_runtime]
-    project_count = len({service.project for service in runtime_services})
 
     technologies = sorted(
         {extract_image_family(service.image_repository) for service in runtime_services}
@@ -258,24 +212,16 @@ def render_overview(services: list[ServiceRecord], providers: list[str]) -> str:
             f"`{service.name}`",
             f"`{service.image_repository}`",
             f"`{service.image}`",
-            service.exposure,
-            service.persistence,
         ]
         for service in runtime_services
     ]
 
     lines = [
-        (
-            f"This repository currently declares **{project_count} Synology container projects** "
-            f"and **{len(runtime_services)} exposed runtime services**."
-        ),
+        f"This repository manages **{len(runtime_services)} self-hosted services** on my Synology NAS.",
         "",
         "### Runtime Services",
         "",
-        build_table(
-            ["Project", "Service", "Image Repo", "Image", "Exposure", "Persistence"],
-            runtime_rows,
-        ),
+        build_table(["Project", "Service", "Image Repo", "Image"], runtime_rows),
         "",
         "### Platform Building Blocks",
         "",
