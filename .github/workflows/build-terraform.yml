@@ -1,0 +1,55 @@
+name: Build / Terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-terraform.yml'
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.hcl'
+      - 'justfile'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-terraform.yml'
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.hcl'
+      - 'justfile'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-terraform:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4
+
+      - name: Install Just
+        uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b # v3
+        with:
+          just-version: '1.42.4'
+
+      - name: Terraform Init
+        run: just init
+
+      - name: Terraform Plan
+        run: just plan
+        env:
+          TF_VAR_dsm_host: ${{ secrets.DSM_HOST }}
+          TF_VAR_dsm_user: ${{ secrets.DSM_USER }}
+          TF_VAR_dsm_password: ${{ secrets.DSM_PASSWORD }}
+          # -- bobine keys for build only --
+          TF_VAR_bobine_ed25519_private_key_hex: '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+          TF_VAR_bobine_ed25519_public_key_hex: '0000000000000000000000000000000000000000000000000000000000000000'

@@ -1,29 +1,35 @@
-name: Update documentation
+name: Docs / Update README
 
 on:
   push:
     branches: [main]
-
+    paths:
+      - '.github/workflows/update-docs-readme.yml'
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.hcl'
+      - '.terraform-docs.yml'
+      - 'justfile'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: update-docs-${{ github.ref }}
+  group: update-docs-readme-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  generate-terraform-docs:
+  docs-update-readme:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           token: ${{ secrets.TERRAFORM_DOC_TOKEN }}
 
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v7
+        uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
@@ -32,23 +38,22 @@ jobs:
           git_commit_gpgsign: true
 
       - name: Install Just
-        uses: extractions/setup-just@v3
+        uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b # v3
         with:
           just-version: '1.42.4'
 
       - name: Generate Terraform docs
-        uses: terraform-docs/gh-actions@v1.4.1
+        uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
         with:
           output-file: README.md
           output-method: inject
           output-format: markdown
-          git-push: "false"
+          git-push: 'false'
 
       - name: Generate Just recipes
         run: |
           echo "📝 Generating Just recipes"
 
-          CONTENT=$(just -l)
           awk '
           /<!-- BEGIN_JUST_RECIPES -->/ {
               print
@@ -64,15 +69,15 @@ jobs:
           !skip
           ' README.md > README.tmp && mv README.tmp README.md
 
-      - name: Prettiyfy README.md
+      - name: Prettify README.md
         run: |
           echo "📝 Prettifying README.md"
           npx prettier@3.0.3 README.md --write
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
         with:
-          commit_message: "docs(README): update documentation"
+          commit_message: 'docs(README): update documentation'
           commit_author: ${{ vars.GIT_AUTHOR_NAME }} <${{ vars.GIT_AUTHOR_EMAIL }}>
           commit_user_name: ${{ vars.GIT_AUTHOR_NAME }}
           commit_user_email: ${{ vars.GIT_AUTHOR_EMAIL }}
