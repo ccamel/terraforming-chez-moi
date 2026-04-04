@@ -12,6 +12,31 @@
 This repo is exploratory, idiosyncratic, and not intended as a universal template.  
 But if you enjoy turning black-box appliances into programmable interfaces - welcome.
 
+## Overview
+
+<!-- BEGIN_DEPLOYED_OVERVIEW -->
+
+This repository currently declares **5 Synology container projects** and **6 exposed runtime services**.
+
+### Runtime Services
+
+| Project          | Service    | Image Repo                       | Image                                   | Exposure                                           | Persistence           |
+| ---------------- | ---------- | -------------------------------- | --------------------------------------- | -------------------------------------------------- | --------------------- |
+| `bobine`         | `bobine`   | `denoland/deno`                  | `denoland/deno:debian-2.6.3`            | `bobine_published_port (default: 8082)` -> `8080`  | `/app/local`          |
+| `infra-db`       | `adminer`  | `adminer`                        | `adminer:5.3.0`                         | `adminer_published_port (default: 8081)` -> `8080` | none                  |
+| `infra-db`       | `postgres` | `bitnamilegacy/postgresql`       | `bitnamilegacy/postgresql:17.5.0`       | internal only                                      | `/bitnami/postgresql` |
+| `n8n`            | `n8n`      | `n8nio/n8n`                      | `n8nio/n8n:2.1.5-amd64`                 | `n8n_published_port (default: 5678)` -> `5678`     | `/home/node/.n8n`     |
+| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` | `42617` -> `42617`                                 | `/zeroclaw-data`      |
+| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` | `42618` -> `42617`                                 | `/zeroclaw-data`      |
+
+### Platform Building Blocks
+
+- Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
+- Runtime is organized as Synology Container Manager projects with bind-mounted DSM folders for persistence.
+- Declared runtime technologies: `adminer`, `deno`, `n8n`, `postgresql`, `zeroclaw`.
+- Declared runtime networks: `edge`, `infra`.
+<!-- END_DEPLOYED_OVERVIEW -->
+
 ## Philosophy
 
 This repository implements a simple GitOps approach for managing my home infrastructure: desired state is defined in [Terraform](https://developer.hashicorp.com/terraform), versioned in Git, and applied through automated workflows.
@@ -39,7 +64,7 @@ Available recipes:
 
 <!-- END_JUST_RECIPES -->
 
-## Overview
+## Terraform Details
 
 <!-- BEGIN_TF_DOCS -->
 
