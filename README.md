@@ -58,6 +58,7 @@ Available recipes:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw\_cyrus](#module\_zeroclaw\_cyrus) | ./modules/zeroclaw | n/a |
+| <a name="module_zeroclaw_lior"></a> [zeroclaw\_lior](#module\_zeroclaw\_lior) | ./modules/zeroclaw | n/a |
 
 ### Resources
 
