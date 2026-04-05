@@ -1,5 +1,7 @@
 # terraforming-chez-moi
 
+![terraforming-chez-moi banner](./assets/banner.webp)
+
 > 🪐 Personal Terraform configuration for shaping and managing my home infrastructure - including my Synology DS415+, self-hosted services, and all the weird experiments that come with being a geek at home.
 
 [![build](https://img.shields.io/github/actions/workflow/status/ccamel/terraforming-chez-moi/build-terraform.yml?branch=main&label=build%20terraform&style=for-the-badge&logo=github)](https://github.com/ccamel/terraforming-chez-moi/actions/workflows/build-terraform.yml)
