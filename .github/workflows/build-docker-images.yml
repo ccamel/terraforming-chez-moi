@@ -1,0 +1,161 @@
+name: Build / Docker Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-docker-images.yml"
+      - "docker/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-docker-images.yml"
+      - "docker/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-docker-images-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-24.04
+    outputs:
+      has_images: ${{ steps.matrix.outputs.has_images }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      repository_owner: ${{ steps.environment.outputs.repository_owner }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Find changed Docker files
+        id: discover
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+        with:
+          separator: ","
+          files: |
+            docker/**/Dockerfile
+            docker/**/.platforms
+            docker/**/.build-args
+
+      - name: Setup environment
+        id: environment
+        run: |
+          echo "repository_owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Create build matrix
+        id: matrix
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            mapfile -t dockerfiles < <(find docker -mindepth 3 -maxdepth 3 -type f -name Dockerfile | sort)
+          else
+            all_modified_files='${{ steps.discover.outputs.all_modified_files }}'
+            declare -A unique_paths=()
+            IFS=',' read -r -a changed_files <<< "${all_modified_files}"
+            for changed_file in "${changed_files[@]}"; do
+              [[ -n "${changed_file}" ]] || continue
+              path="$(dirname "${changed_file}")"
+              if [[ -f "${path}/Dockerfile" ]]; then
+                unique_paths["${path}"]=1
+              fi
+            done
+
+            dockerfiles=()
+            for path in "${!unique_paths[@]}"; do
+              dockerfiles+=("${path}/Dockerfile")
+            done
+            IFS=$'\n' dockerfiles=($(printf '%s\n' "${dockerfiles[@]}" | sort))
+          fi
+
+          if [[ "${#dockerfiles[@]}" -eq 0 ]]; then
+            echo "has_images=false" >> "$GITHUB_OUTPUT"
+            echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          config='[]'
+          for dockerfile in "${dockerfiles[@]}"; do
+            path="$(dirname "${dockerfile}")"
+            version="$(basename "${path}")"
+            name="$(basename "$(dirname "${path}")")"
+
+            if [[ -f "${path}/.platforms" ]]; then
+              platforms="$(tr -d '\n' < "${path}/.platforms")"
+            else
+              platforms="linux/amd64"
+            fi
+
+            if [[ -f "${path}/.build-args" ]]; then
+              build_args="$(cat "${path}/.build-args")"
+            else
+              build_args=""
+            fi
+
+            config="$(
+              jq -c \
+                --arg path "${path}" \
+                --arg dockerfile "${dockerfile}" \
+                --arg version "${version}" \
+                --arg name "${name}" \
+                --arg platforms "${platforms}" \
+                --arg build_args "${build_args}" \
+                '. + [{
+                  path: $path,
+                  dockerfile: $dockerfile,
+                  version: $version,
+                  name: $name,
+                  platforms: $platforms,
+                  build_args: $build_args
+                }]' <<< "${config}"
+            )"
+          done
+
+          echo "has_images=true" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":${config}}" >> "$GITHUB_OUTPUT"
+
+  build:
+    runs-on: ubuntu-24.04
+    needs: discover
+    if: needs.discover.outputs.has_images == 'true'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ matrix.path }}
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ matrix.platforms }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ needs.discover.outputs.repository_owner }}/${{ matrix.name }}:${{ matrix.version }}
+          cache-from: type=gha,scope=${{ matrix.name }}-${{ matrix.version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}-${{ matrix.version }}
+          build-args: ${{ matrix.build_args }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.title=${{ matrix.name }}
