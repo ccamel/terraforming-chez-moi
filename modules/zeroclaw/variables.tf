@@ -14,7 +14,7 @@ variable "published_port" {
 }
 
 variable "image" {
-  description = "ZeroClaw container image"
+  description = "ZeroClaw runtime image"
   type        = string
 }
 

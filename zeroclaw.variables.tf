@@ -1,5 +1,5 @@
 variable "zeroclaw_image" {
-  description = "ZeroClaw container image. Use the upstream :debian variant if the default image has runtime issues on your Synology"
+  description = "Prebuilt ZeroClaw runtime image published to GHCR"
   type        = string
-  default     = "ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8"
+  default     = "ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04"
 }

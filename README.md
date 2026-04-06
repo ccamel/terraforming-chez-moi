@@ -28,13 +28,14 @@ This repository manages **6 self-hosted services** on my Synology NAS.
 | `infra-db`       | `adminer`  | `adminer`                        | `adminer:5.3.0`                         |
 | `infra-db`       | `postgres` | `bitnamilegacy/postgresql`       | `bitnamilegacy/postgresql:17.5.0`       |
 | `n8n`            | `n8n`      | `n8nio/n8n`                      | `n8nio/n8n:2.1.5-amd64`                 |
-| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` |
-| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw` | `ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8` |
+| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04` |
+| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04` |
 
 ### Platform Building Blocks
 
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is organized as Synology Container Manager projects with bind-mounted DSM folders for persistence.
+- ZeroClaw uses a prebuilt Ubuntu-based runtime image published to GHCR; application state is persisted in `~/.zeroclaw`.
 - Declared runtime technologies: `adminer`, `deno`, `n8n`, `postgresql`, `zeroclaw`.
 - Declared runtime networks: `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
@@ -65,6 +66,19 @@ Available recipes:
 ```
 
 <!-- END_JUST_RECIPES -->
+
+## ZeroClaw Runtime Image
+
+Docker images are defined under `docker/<image-name>/<image-tag>/Dockerfile` and published by [`.github/workflows/build-docker-images.yml`](.github/workflows/build-docker-images.yml).
+
+The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile).
+
+- The published image name is derived from `<image-name>` and the published tag from `<image-tag>`.
+- The workflow discovers changed Docker build contexts and builds them through a matrix job.
+- Optional `.platforms` and `.build-args` files next to a Dockerfile control per-image settings.
+- Terraform should reference a versioned tag, not `latest`.
+- A Synology NAS can pull the image anonymously only if the GHCR package is marked `public`.
+- If the package stays `private`, Container Manager must authenticate to `ghcr.io` with a GitHub token that has `read:packages`.
 
 ## Terraform Details
 
@@ -121,7 +135,7 @@ Available recipes:
 | <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                                              | Public URL for n8n webhooks                                                                                         | `string` | `"localhost:5678"`                        |    no    |
 | <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                        | Password for the PostgreSQL service                                                                                 | `string` | `"postgres-password"`                     |    no    |
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                    | Username for the PostgreSQL service                                                                                 | `string` | `"postgres-user"`                         |    no    |
-| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                 | ZeroClaw container image. Use the upstream :debian variant if the default image has runtime issues on your Synology | `string` | `"ghcr.io/zeroclaw-labs/zeroclaw:v0.6.8"` |    no    |
+| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                 | Prebuilt ZeroClaw runtime image published to GHCR | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04"` |    no    |
 
 ## Outputs
 
