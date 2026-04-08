@@ -28,8 +28,8 @@ This repository manages **6 self-hosted services** on my Synology NAS.
 | `infra-db`       | `adminer`  | `adminer`                        | `adminer:5.3.0`                         |
 | `infra-db`       | `postgres` | `bitnamilegacy/postgresql`       | `bitnamilegacy/postgresql:17.5.0`       |
 | `n8n`            | `n8n`      | `n8nio/n8n`                      | `n8nio/n8n:2.1.5-amd64`                 |
-| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04` |
-| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04` |
+| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04` |
+| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04` |
 
 ### Platform Building Blocks
 
@@ -71,7 +71,7 @@ Available recipes:
 
 Docker images are defined under `docker/<image-name>/<image-tag>/Dockerfile` and published by [`.github/workflows/build-docker-images.yml`](.github/workflows/build-docker-images.yml).
 
-The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile).
+The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile).
 
 - The published image name is derived from `<image-name>` and the published tag from `<image-tag>`.
 - The workflow discovers changed Docker build contexts and builds them through a matrix job.
@@ -135,7 +135,7 @@ The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.8-ubuntu24.
 | <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                                              | Public URL for n8n webhooks                                                                                         | `string` | `"localhost:5678"`                        |    no    |
 | <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                        | Password for the PostgreSQL service                                                                                 | `string` | `"postgres-password"`                     |    no    |
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                    | Username for the PostgreSQL service                                                                                 | `string` | `"postgres-user"`                         |    no    |
-| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                 | Prebuilt ZeroClaw runtime image published to GHCR | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04"` |    no    |
+| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                 | Prebuilt ZeroClaw runtime image published to GHCR | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04"` |    no    |
 
 ## Outputs
 
