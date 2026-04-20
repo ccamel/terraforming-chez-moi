@@ -34,7 +34,8 @@ This repository manages **6 self-hosted services** on my Synology NAS.
 ### Platform Building Blocks
 
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
-- Runtime is organized as Synology Container Manager projects with bind-mounted DSM folders for persistence.
+- Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
+- Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
 - ZeroClaw uses a prebuilt Ubuntu-based runtime image published to GHCR; application state is persisted in `~/.zeroclaw`.
 - Declared runtime technologies: `adminer`, `deno`, `n8n`, `postgresql`, `zeroclaw`.
 - Declared runtime networks: `edge`, `infra`.
@@ -47,6 +48,8 @@ This repository implements a simple GitOps approach for managing my home infrast
 ## Usage
 
 This project uses [`just`](https://github.com/casey/just) as a command runner.
+
+`apply` and `destroy` expect `Ansible` on the local machine plus SSH access to the NAS.
 
 To see the available recipes, run: `just -l`.
 
@@ -94,12 +97,15 @@ The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.
 
 | Name                                                            | Version |
 | --------------------------------------------------------------- | ------- |
-| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.9   |
+| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.10  |
 
 ## Modules
 
 | Name                                                                          | Source             | Version |
 | ----------------------------------------------------------------------------- | ------------------ | ------- |
+| <a name="module_bobine"></a> [bobine](#module_bobine)                         | ./modules/compose_stack | n/a |
+| <a name="module_infra_db"></a> [infra_db](#module_infra_db)                   | ./modules/compose_stack | n/a |
+| <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a |
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw | n/a     |
 | <a name="module_zeroclaw_lior"></a> [zeroclaw_lior](#module_zeroclaw_lior)    | ./modules/zeroclaw | n/a     |
 
@@ -107,9 +113,6 @@ The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.
 
 | Name                                                                                                                                                        | Type     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| [synology_container_project.bobine](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)            | resource |
-| [synology_container_project.infra_db](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)          | resource |
-| [synology_container_project.n8n](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/container_project)               | resource |
 | [synology_filestation_folder.bobine_local](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)    | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)        | resource |
@@ -122,6 +125,11 @@ The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.
 | <a name="input_bobine_ed25519_private_key_hex"></a> [bobine_ed25519_private_key_hex](#input_bobine_ed25519_private_key_hex) | Ed25519 private key hex for bobine                                                                                  | `string` | n/a                                       |   yes    |
 | <a name="input_bobine_ed25519_public_key_hex"></a> [bobine_ed25519_public_key_hex](#input_bobine_ed25519_public_key_hex)    | Ed25519 public key hex for bobine                                                                                   | `string` | n/a                                       |   yes    |
 | <a name="input_bobine_published_port"></a> [bobine_published_port](#input_bobine_published_port)                            | Published port on the Synology host for bobine                                                                      | `number` | `8082`                                    |    no    |
+| <a name="input_deploy_ssh_host"></a> [deploy_ssh_host](#input_deploy_ssh_host)                                              | SSH host used by Ansible to apply rendered Compose stacks on the Synology NAS                                       | `string` | `null`                                    |    no    |
+| <a name="input_deploy_ssh_port"></a> [deploy_ssh_port](#input_deploy_ssh_port)                                              | SSH port used by Ansible to apply rendered Compose stacks on the Synology NAS                                       | `number` | `22`                                      |    no    |
+| <a name="input_deploy_ssh_private_key_path"></a> [deploy_ssh_private_key_path](#input_deploy_ssh_private_key_path)          | Path to the SSH private key used by Ansible to reach the Synology NAS                                               | `string` | n/a                                       |   yes    |
+| <a name="input_deploy_ssh_strict_host_key_checking"></a> [deploy_ssh_strict_host_key_checking](#input_deploy_ssh_strict_host_key_checking) | Whether Ansible should enforce SSH host key checking when deploying Compose stacks                                  | `bool`   | `false`                                   |    no    |
+| <a name="input_deploy_ssh_user"></a> [deploy_ssh_user](#input_deploy_ssh_user)                                              | SSH user used by Ansible to apply rendered Compose stacks on the Synology NAS                                       | `string` | `null`                                    |    no    |
 | <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                                                   | The hostname of my Synology DSM instance                                                                            | `string` | n/a                                       |   yes    |
 | <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                                                       | DSM password                                                                                                        | `string` | n/a                                       |   yes    |
 | <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                                                   | DSM username                                                                                                        | `string` | n/a                                       |   yes    |
