@@ -7,134 +7,35 @@ resource "synology_filestation_folder" "infra_db_pgdata" {
   }
 }
 
-resource "synology_container_project" "infra_db" {
-  name       = "infra-db"
-  run        = true
-  share_path = "${var.dsm_volume_projects}/infra-db"
+module "infra_db" {
+  source = "./modules/compose_stack"
 
-  services = {
-    permfix = {
-      image = "alpine:3.22"
-      user  = "0:0"
-      name  = "infra-db-permfix"
-
-      volumes = [{
-        type      = "bind"
-        source    = synology_filestation_folder.infra_db_pgdata.real_path
-        target    = "/fix"
-        bind      = { create_host_path = true }
-        read_only = false
-      }]
-
-      entrypoint = ["sh", "-lc"]
-      command = [
-        "chown -R 1001:1001 /fix && chmod 700 /fix && echo OK"
-      ]
-
-      restart = "no"
-
-      healthcheck = {
-        test         = ["CMD-SHELL", "[ -f /bin/true ] || exit 1"]
-        interval     = "10s"
-        timeout      = "2s"
-        retries      = 1
-        start_period = "1s"
-      }
-
-      logging = { driver = "json-file" }
-    }
-
-
-    "postgres" = {
-      image = "bitnamilegacy/postgresql:17.5.0"
-      name  = "infra-db-postgres"
-
-      environment = {
-        POSTGRESQL_USERNAME = var.postgres_user
-        POSTGRESQL_PASSWORD = var.postgres_password
-        TZ                  = "Europe/Paris"
-      }
-
-      volumes = [{
-        type      = "bind"
-        source    = synology_filestation_folder.infra_db_pgdata.real_path
-        target    = "/bitnami/postgresql"
-        bind      = { create_host_path = true }
-        read_only = false
-      }]
-
-      healthcheck = {
-        test         = ["CMD-SHELL", "pg_isready -U ${var.postgres_user} -d postgres -h 127.0.0.1 || exit 1"]
-        interval     = "10s"
-        timeout      = "3s"
-        retries      = 10
-        start_period = "120s"
-      }
-
-
-      restart = "unless-stopped"
-
-      networks = {
-        infra_net = {
-        }
-      }
-
-      logging = { driver = "json-file" }
-      depends_on = {
-        permfix = {
-          condition = "service_completed_successfully"
-        }
-      }
-    }
-
-    "adminer" = {
-      image = "adminer:5.3.0"
-      name  = "infra-db-adminer"
-
-      ports = [{
-        target    = 8080
-        published = var.adminer_published_port
-      }]
-
-      environment = {
-        ADMINER_DEFAULT_SERVER = "postgres"
-      }
-
-      restart = "unless-stopped"
-
-      networks = {
-        infra_net = {}
-        edge_net  = {}
-      }
-
-      depends_on = {
-        "postgres" = {
-          condition = "service_healthy"
-          restart   = true
-        }
-      }
-
-      logging = { driver = "json-file" }
-    }
-  }
-
-  networks = {
-    infra_net = {
-      attachable = true
-      driver     = "bridge"
-      name       = "infra"
-      internal   = true
-    }
-
-    edge_net = {
-      attachable = true
-      driver     = "bridge"
-      name       = "edge"
-      internal   = false
-    }
-  }
+  stack_name                   = "infra-db"
+  project_name                 = "infra-db"
+  remote_dir                   = dirname(synology_filestation_folder.infra_db_pgdata.real_path)
+  ssh_host                     = local.compose_deploy_ssh_host
+  ssh_user                     = local.compose_deploy_ssh_user
+  ssh_port                     = var.deploy_ssh_port
+  ssh_private_key_path         = var.deploy_ssh_private_key_path
+  ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
+  compose_yaml                 = templatefile("${path.module}/templates/infra-db.compose.yaml.tftpl", {})
+  external_networks = [
+    {
+      name     = "infra"
+      internal = true
+    },
+    {
+      name     = "edge"
+      internal = false
+    },
+  ]
+  env_file = templatefile("${path.module}/templates/infra-db.env.tftpl", {
+    postgres_user          = var.postgres_user
+    postgres_password      = var.postgres_password
+    adminer_published_port = var.adminer_published_port
+  })
 
   depends_on = [
-    synology_filestation_folder.infra_db_pgdata
+    synology_filestation_folder.infra_db_pgdata,
   ]
 }

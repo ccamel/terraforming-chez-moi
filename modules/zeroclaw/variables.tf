@@ -29,3 +29,30 @@ variable "edge_network_name" {
   type        = string
   default     = "edge"
 }
+
+variable "deploy_ssh_host" {
+  description = "SSH host used by Ansible to apply rendered Compose stacks"
+  type        = string
+}
+
+variable "deploy_ssh_user" {
+  description = "SSH user used by Ansible to apply rendered Compose stacks"
+  type        = string
+}
+
+variable "deploy_ssh_port" {
+  description = "SSH port used by Ansible to apply rendered Compose stacks"
+  type        = number
+  default     = 22
+}
+
+variable "deploy_ssh_private_key_path" {
+  description = "Path to the SSH private key used by Ansible to reach the remote host"
+  type        = string
+}
+
+variable "deploy_ssh_strict_host_key_checking" {
+  description = "Whether SSH host key checking should remain enabled during Ansible runs"
+  type        = bool
+  default     = false
+}

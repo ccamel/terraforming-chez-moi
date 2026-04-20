@@ -1,0 +1,75 @@
+services:
+  permfix:
+    image: alpine:3.22
+    container_name: infra-db-permfix
+    user: "0:0"
+    volumes:
+      - ./postgres-data:/fix
+    entrypoint:
+      - sh
+      - -lc
+    command:
+      - chown -R 1001:1001 /fix && chmod 700 /fix && echo OK
+    restart: "no"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "[ -f /bin/true ] || exit 1"
+      interval: 10s
+      timeout: 2s
+      retries: 1
+      start_period: 1s
+    logging:
+      driver: json-file
+
+  postgres:
+    image: bitnamilegacy/postgresql:17.5.0
+    container_name: infra-db-postgres
+    environment:
+      POSTGRESQL_USERNAME: $${POSTGRES_USER}
+      POSTGRESQL_PASSWORD: $${POSTGRES_PASSWORD}
+      TZ: Europe/Paris
+    volumes:
+      - ./postgres-data:/bitnami/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U $${POSTGRES_USER} -d postgres -h 127.0.0.1 || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 120s
+    restart: unless-stopped
+    networks:
+      - infra_net
+    depends_on:
+      permfix:
+        condition: service_completed_successfully
+    logging:
+      driver: json-file
+
+  adminer:
+    image: adminer:5.3.0
+    container_name: infra-db-adminer
+    ports:
+      - "$${ADMINER_PUBLISHED_PORT}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    restart: unless-stopped
+    networks:
+      - infra_net
+      - edge_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging:
+      driver: json-file
+
+networks:
+  infra_net:
+    external: true
+    name: infra
+
+  edge_net:
+    external: true
+    name: edge

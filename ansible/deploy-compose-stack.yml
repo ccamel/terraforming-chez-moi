@@ -1,0 +1,69 @@
+---
+- name: Deploy rendered Docker Compose stack
+  hosts: all
+  gather_facts: false
+  collections:
+    - community.docker
+  vars:
+    stack_spec: "{{ lookup('ansible.builtin.env', 'COMPOSE_STACK_SPEC_B64') | b64decode | from_json }}"
+
+  tasks:
+    - name: Ensure remote stack directory exists
+      ansible.builtin.file:
+        path: "{{ stack_spec.remote_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Upload compose.yaml
+      ansible.builtin.copy:
+        dest: "{{ stack_spec.remote_dir }}/compose.yaml"
+        content: "{{ stack_spec.compose_yaml }}"
+        mode: "0644"
+
+    - name: Upload .env
+      ansible.builtin.copy:
+        dest: "{{ stack_spec.remote_dir }}/.env"
+        content: "{{ stack_spec.env_file }}"
+        mode: "0600"
+      when: stack_spec.env_file | length > 0
+
+    - name: Remove .env when the stack does not use one
+      ansible.builtin.file:
+        path: "{{ stack_spec.remote_dir }}/.env"
+        state: absent
+      when: stack_spec.env_file | length == 0
+
+    - name: Upload stack companion files
+      ansible.builtin.copy:
+        dest: "{{ stack_spec.remote_dir }}/{{ item.path }}"
+        content: "{{ item.content }}"
+        mode: "{{ item.mode }}"
+      loop: "{{ stack_spec.extra_files }}"
+      loop_control:
+        label: "{{ item.path }}"
+
+    - name: Ensure required external Docker networks exist
+      ansible.builtin.shell: |
+        set -eu
+        if ! docker network inspect "{{ item.name }}" >/dev/null 2>&1; then
+          cmd="docker network create --driver bridge"
+          if [ "{{ item.internal | default(false) | ternary('true', 'false') }}" = "true" ]; then
+            cmd="$cmd --internal"
+          fi
+          cmd="$cmd {{ item.name }}"
+          sh -lc "$cmd"
+        fi
+      args:
+        executable: /bin/sh
+      loop: "{{ stack_spec.external_networks | default([]) }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Apply Compose stack
+      community.docker.docker_compose_v2:
+        project_name: "{{ stack_spec.project_name }}"
+        project_src: "{{ stack_spec.remote_dir }}"
+        files:
+          - compose.yaml
+        remove_orphans: true
+        state: present

@@ -12,3 +12,8 @@ provider "synology" {
   user     = var.dsm_user
   password = var.dsm_password
 }
+
+locals {
+  compose_deploy_ssh_host = coalesce(var.deploy_ssh_host, var.dsm_host)
+  compose_deploy_ssh_user = coalesce(var.deploy_ssh_user, var.dsm_user)
+}

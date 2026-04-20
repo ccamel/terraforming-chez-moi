@@ -1,0 +1,119 @@
+services:
+  permfix:
+    image: alpine:3.22
+    container_name: n8n-permfix
+    user: "0:0"
+    volumes:
+      - ./data:/fix
+    entrypoint:
+      - sh
+      - -lc
+    command:
+      - chown -R 1000:1000 /fix && chmod 755 /fix && echo OK
+    restart: "no"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "[ -f /bin/true ] || exit 1"
+      interval: 10s
+      timeout: 2s
+      retries: 1
+      start_period: 1s
+    logging:
+      driver: json-file
+
+  db_bootstrap:
+    image: postgres:17-alpine
+    container_name: n8n-db-bootstrap
+    environment:
+      PGPASSWORD: $${POSTGRES_PASSWORD}
+      TZ: Europe/Paris
+    volumes:
+      - ./init.sql:/bootstrap/init.sql:ro
+    entrypoint:
+      - sh
+      - -lc
+    command:
+      - |-
+        set -e
+        echo "Starting n8n database bootstrap..."
+        echo "Waiting for PostgreSQL to be ready..."
+        until pg_isready -h postgres -U $${POSTGRES_USER}; do
+          echo "PostgreSQL not ready, retrying in 2s..."
+          sleep 2
+        done
+        echo "PostgreSQL is ready!"
+        echo "Initializing n8n database and user..."
+        psql -v ON_ERROR_STOP=1 \
+             -h postgres -U $${POSTGRES_USER} -d postgres \
+             -f /bootstrap/init.sql
+        echo "n8n database initialization completed successfully"
+        touch /.bootstrap_completed
+        echo "Bootstrap process finished!"
+    restart: "no"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "[ -f /.bootstrap_completed ] || exit 1"
+      interval: 5s
+      timeout: 3s
+      retries: 1
+      start_period: 1s
+    networks:
+      - infra_net
+    logging:
+      driver: json-file
+
+  n8n:
+    image: n8nio/n8n:2.1.5-amd64
+    container_name: n8n-n8n
+    ports:
+      - "$${N8N_PUBLISHED_PORT}:5678"
+    environment:
+      N8N_HOST: $${N8N_HOST}
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_ENCRYPTION_KEY: $${N8N_ENCRYPTION_KEY}
+      WEBHOOK_URL: $${N8N_WEBHOOK_URL}
+      GENERIC_TIMEZONE: Europe/Paris
+      N8N_LOG_LEVEL: info
+      N8N_LOG_OUTPUT: console
+      N8N_DISABLE_PRODUCTION_MAIN_PROCESS: "false"
+      N8N_METRICS: "false"
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: "5432"
+      DB_POSTGRESDB_DATABASE: $${N8N_POSTGRES_DB}
+      DB_POSTGRESDB_USER: $${N8N_POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: $${N8N_POSTGRES_PASSWORD}
+      DB_POSTGRESDB_SCHEMA: public
+    volumes:
+      - ./data:/home/node/.n8n
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - infra_net
+      - edge_net
+    depends_on:
+      permfix:
+        condition: service_completed_successfully
+      db_bootstrap:
+        condition: service_completed_successfully
+    logging:
+      driver: json-file
+
+networks:
+  infra_net:
+    external: true
+    name: infra
+
+  edge_net:
+    external: true
+    name: edge

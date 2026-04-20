@@ -1,0 +1,35 @@
+services:
+  zeroclaw:
+    image: ${image}
+    container_name: ${project_name}
+    command:
+      - zeroclaw
+      - daemon
+      - --host
+      - 0.0.0.0
+      - --port
+      - "42617"
+    ports:
+      - "$${ZEROCLAW_PUBLISHED_PORT}:42617"
+    volumes:
+      - ./data:/root/.zeroclaw
+    healthcheck:
+      test:
+        - CMD
+        - zeroclaw
+        - status
+        - --format=exit-code
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - edge_net
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: ${edge_network_name}
