@@ -1,0 +1,24 @@
+---
+- name: Tear down rendered Docker Compose stack
+  hosts: all
+  gather_facts: false
+  collections:
+    - community.docker
+  vars:
+    stack_spec: "{{ lookup('ansible.builtin.env', 'COMPOSE_STACK_SPEC_B64') | b64decode | from_json }}"
+
+  tasks:
+    - name: Check whether compose.yaml exists remotely
+      ansible.builtin.stat:
+        path: "{{ stack_spec.remote_dir }}/compose.yaml"
+      register: compose_file
+
+    - name: Stop Compose stack when present
+      community.docker.docker_compose_v2:
+        project_name: "{{ stack_spec.project_name }}"
+        project_src: "{{ stack_spec.remote_dir }}"
+        files:
+          - compose.yaml
+        remove_orphans: true
+        state: absent
+      when: compose_file.stat.exists

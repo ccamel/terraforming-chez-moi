@@ -19,66 +19,34 @@ resource "synology_filestation_folder" "data" {
   }
 }
 
-resource "synology_container_project" "this" {
-  name       = local.project_name
-  run        = true
-  share_path = "${var.projects_root}/${local.project_name}"
+module "compose_stack" {
+  source = "../compose_stack"
 
-  services = {
-    zeroclaw = {
-      image = var.image
-      name  = local.project_name
-
-      command = [
-        "zeroclaw",
-        "daemon",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "42617",
-      ]
-
-      ports = [{
-        target    = 42617
-        published = var.published_port
-      }]
-
-      volumes = [{
-        type      = "bind"
-        source    = "./data"
-        target    = "/root/.zeroclaw"
-        bind      = { create_host_path = true }
-        read_only = false
-      }]
-
-      healthcheck = {
-        test         = ["CMD", "zeroclaw", "status", "--format=exit-code"]
-        interval     = "60s"
-        timeout      = "10s"
-        retries      = 3
-        start_period = "10s"
-      }
-
-      restart = "unless-stopped"
-
-      networks = {
-        edge_net = {}
-      }
-
-      logging = { driver = "json-file" }
-    }
-  }
-
-  networks = {
-    edge_net = {
-      attachable = true
-      driver     = "bridge"
-      name       = var.edge_network_name
-      external   = true
-    }
-  }
+  stack_name                   = local.project_name
+  project_name                 = local.project_name
+  remote_dir                   = dirname(synology_filestation_folder.data.real_path)
+  ssh_host                     = var.deploy_ssh_host
+  ssh_user                     = var.deploy_ssh_user
+  ssh_port                     = var.deploy_ssh_port
+  ssh_private_key_path         = var.deploy_ssh_private_key_path
+  ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
+  compose_yaml = templatefile("${path.module}/templates/compose.yaml.tftpl", {
+    project_name      = local.project_name
+    edge_network_name = var.edge_network_name
+    image             = var.image
+    published_port    = var.published_port
+  })
+  external_networks = [
+    {
+      name     = var.edge_network_name
+      internal = false
+    },
+  ]
+  env_file = templatefile("${path.module}/templates/env.tftpl", {
+    published_port = var.published_port
+  })
 
   depends_on = [
-    synology_filestation_folder.data
+    synology_filestation_folder.data,
   ]
 }
