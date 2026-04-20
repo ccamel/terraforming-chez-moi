@@ -8,6 +8,8 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.hcl'
+      - '**/*.tftpl'
+      - 'ansible/**'
       - '.github/scripts/**'
       - '.github/python/requirements.txt'
       - '.terraform-docs.yml'

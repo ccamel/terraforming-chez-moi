@@ -8,12 +8,14 @@ from pathlib import Path
 from typing import Any
 
 import hcl2
+import yaml
 from tabulate import tabulate
 
 BEGIN_MARKER = "<!-- BEGIN_DEPLOYED_OVERVIEW -->"
 END_MARKER = "<!-- END_DEPLOYED_OVERVIEW -->"
 EXPR_RE = re.compile(r"\${([^}]+)}")
 FULL_EXPR_RE = re.compile(r"^\${([^}]+)}$")
+TEMPLATE_PATH_RE = re.compile(r"templates/[^\"')]+\.tftpl")
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -151,15 +153,120 @@ def collect_project_services(
     return services
 
 
-def collect_services(
+def extract_template_path(value: Any) -> Path | None:
+    rendered = stringify(value, "")
+    match = TEMPLATE_PATH_RE.search(rendered)
+    if not match:
+        return None
+    return ROOT / match.group(0)
+
+
+def render_compose_template(template_path: Path, variables: dict[str, Any]) -> str:
+    content = template_path.read_text(encoding="utf-8")
+    escaped_compose_vars = "__ESCAPED_COMPOSE_VAR__"
+    content = content.replace("$${", escaped_compose_vars)
+    rendered = EXPR_RE.sub(
+        lambda match: stringify(variables.get(match.group(1)), match.group(0)),
+        content,
+    )
+    return rendered.replace(escaped_compose_vars, "${")
+
+
+def render_compose_networks(
+    service: dict[str, Any], project_networks: dict[str, Any]
+) -> list[str]:
+    rendered = []
+    for network_alias in service.get("networks", []):
+        network_attrs = project_networks.get(network_alias, {})
+        network_name = stringify(network_attrs.get("name", network_alias))
+        rendered.append(network_name)
+    return rendered
+
+
+def collect_compose_template_services(
+    project_name: str, template_path: Path, template_variables: dict[str, Any]
+) -> list[ServiceRecord]:
+    compose_data = yaml.safe_load(render_compose_template(template_path, template_variables))
+    project_networks = compose_data.get("networks", {})
+
+    services: list[ServiceRecord] = []
+    for service_name, service in sorted(compose_data.get("services", {}).items()):
+        image = stringify(service.get("image", ""))
+        image_repository = extract_image_repository(image)
+        services.append(
+            ServiceRecord(
+                project=project_name,
+                name=service_name,
+                image=image,
+                image_repository=image_repository,
+                is_runtime=service.get("restart") != "no",
+                networks=render_compose_networks(service, project_networks),
+            )
+        )
+    return services
+
+
+def collect_compose_stack_services(
     root_data: dict[str, list[Any]], root_ctx: EvalContext
 ) -> list[ServiceRecord]:
-    services = collect_project_services(root_data, root_ctx)
+    services: list[ServiceRecord] = []
 
     for module_block in root_data.get("module", []):
         for _, attrs in module_block.items():
             source = attrs.get("source")
-            if not isinstance(source, str) or not source.startswith("./"):
+            if source == "./modules/compose_stack":
+                project_name = stringify(
+                    evaluate(attrs.get("project_name", attrs.get("stack_name")), root_ctx)
+                )
+                template_path = extract_template_path(attrs.get("compose_yaml"))
+                if template_path is None:
+                    continue
+                services.extend(
+                    collect_compose_template_services(
+                        project_name=project_name,
+                        template_path=template_path,
+                        template_variables={},
+                    )
+                )
+            elif source == "./modules/zeroclaw":
+                module_dir = (ROOT / source).resolve()
+                module_data = load_tf_directory(module_dir)
+                overrides = {}
+                for key, value in attrs.items():
+                    if key == "source":
+                        continue
+                    overrides[key] = evaluate(value, root_ctx)
+
+                module_ctx = build_context(module_data, overrides)
+                services.extend(
+                    collect_compose_template_services(
+                        project_name=stringify(module_ctx.locals["project_name"]),
+                        template_path=module_dir / "templates/compose.yaml.tftpl",
+                        template_variables={
+                            "project_name": module_ctx.locals["project_name"],
+                            "edge_network_name": module_ctx.variables["edge_network_name"],
+                            "image": module_ctx.variables["image"],
+                            "published_port": module_ctx.variables["published_port"],
+                        },
+                    )
+                )
+
+    return services
+
+
+def collect_services(
+    root_data: dict[str, list[Any]], root_ctx: EvalContext
+) -> list[ServiceRecord]:
+    services = collect_project_services(root_data, root_ctx)
+    services.extend(collect_compose_stack_services(root_data, root_ctx))
+
+    for module_block in root_data.get("module", []):
+        for _, attrs in module_block.items():
+            source = attrs.get("source")
+            if not isinstance(source, str) or not source.startswith("./") or source in {
+                "./modules/compose_stack",
+                "./modules/zeroclaw",
+            }:
                 continue
 
             module_dir = (ROOT / source).resolve()
@@ -231,9 +338,10 @@ def render_overview(services: list[ServiceRecord], providers: list[str]) -> str:
             + "."
         ),
         (
-            "- Runtime is organized as Synology Container Manager projects with "
-            "bind-mounted DSM folders for persistence."
+            "- Runtime is rendered as Docker Compose stacks and applied remotely "
+            "over SSH via `Ansible`."
         ),
+        "- Synology-specific state is mostly limited to DSM folders provisioned through Terraform.",
         "- Declared runtime technologies: "
         + ", ".join(f"`{item}`" for item in technologies)
         + ".",

@@ -8,6 +8,7 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.hcl'
+      - '**/*.tftpl'
       - 'justfile'
   pull_request:
     branches: [main]
@@ -16,6 +17,7 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.hcl'
+      - '**/*.tftpl'
       - 'justfile'
   workflow_dispatch:
 
