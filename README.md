@@ -70,18 +70,19 @@ Available recipes:
 
 <!-- END_JUST_RECIPES -->
 
-## ZeroClaw Runtime Image
+## Built Docker Images
 
-Docker images are defined under `docker/<image-name>/<image-tag>/Dockerfile` and published by [`.github/workflows/build-docker-images.yml`](.github/workflows/build-docker-images.yml).
+<!-- BEGIN_BUILT_DOCKER_IMAGES -->
 
-The current ZeroClaw runtime lives in [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile).
+Docker images are defined under `docker/<image-name>/<image-tag>/Dockerfile`.
 
-- The published image name is derived from `<image-name>` and the published tag from `<image-tag>`.
-- The workflow discovers changed Docker build contexts and builds them through a matrix job.
-- Optional `.platforms` and `.build-args` files next to a Dockerfile control per-image settings.
-- Terraform should reference a versioned tag, not `latest`.
-- A Synology NAS can pull the image anonymously only if the GHCR package is marked `public`.
-- If the package stays `private`, Container Manager must authenticate to `ghcr.io` with a GitHub token that has `read:packages`.
+These are the image build contexts currently present in the repo:
+
+| Image | Tag | Platforms | Package | Dockerfile |
+| --- | --- | --- | --- | --- |
+| `zeroclaw-runtime` | `v0.6.8-ubuntu24.04` | `linux/amd64` | [`ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile) |
+| `zeroclaw-runtime` | `v0.6.9-ubuntu24.04` | `linux/amd64` | [`ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile) |
+<!-- END_BUILT_DOCKER_IMAGES -->
 
 ## Terraform Details
 

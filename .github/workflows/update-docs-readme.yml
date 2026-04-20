@@ -8,6 +8,7 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.hcl'
+      - 'docker/**'
       - '**/*.tftpl'
       - 'ansible/**'
       - '.github/scripts/**'
@@ -83,6 +84,11 @@ jobs:
         run: |
           . .venv-docs/bin/activate
           python3 .github/scripts/render_readme_overview.py README.md
+
+      - name: Generate built Docker images section
+        run: |
+          . .venv-docs/bin/activate
+          python3 .github/scripts/render_readme_docker_images.py README.md
 
       - name: Prettify README.md
         run: |

@@ -286,16 +286,37 @@ def collect_services(
 
 
 def collect_provider_versions(root_data: dict[str, list[Any]]) -> list[str]:
-    providers = []
-    for terraform_block in root_data.get("terraform", []):
-        for provider_block in terraform_block.get("required_providers", []):
-            for name, attrs in provider_block.items():
-                source = attrs.get("source", name)
+    discovered: dict[str, str | None] = {}
+
+    def walk(node: Any) -> None:
+        if isinstance(node, list):
+            for item in node:
+                walk(item)
+            return
+
+        if not isinstance(node, dict):
+            return
+
+        for name, attrs in node.items():
+            if isinstance(attrs, dict) and (
+                "source" in attrs or "version" in attrs
+            ):
+                source = stringify(attrs.get("source", name))
                 version = attrs.get("version")
-                if version:
-                    providers.append(f"`{source}` ({version})")
-                else:
-                    providers.append(f"`{source}`")
+                discovered[source] = stringify(version) if version is not None else None
+            else:
+                walk(attrs)
+
+    for terraform_block in root_data.get("terraform", []):
+        walk(terraform_block.get("required_providers", []))
+
+    providers = []
+    for source, version in discovered.items():
+        if version:
+            providers.append(f"`{source}` ({version})")
+        else:
+            providers.append(f"`{source}`")
+
     return sorted(set(providers))
 
 
@@ -342,14 +363,14 @@ def render_overview(services: list[ServiceRecord], providers: list[str]) -> str:
             "over SSH via `Ansible`."
         ),
         "- Synology-specific state is mostly limited to DSM folders provisioned through Terraform.",
-        "- Declared runtime technologies: "
+        "- Runtime technologies currently in play: "
         + ", ".join(f"`{item}`" for item in technologies)
         + ".",
     ]
 
     if networks:
         lines.append(
-            "- Declared runtime networks: "
+            "- Shared runtime networks: "
             + ", ".join(f"`{item}`" for item in networks)
             + "."
         )
