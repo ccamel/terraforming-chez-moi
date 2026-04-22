@@ -18,13 +18,14 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **6 self-hosted services** on my Synology NAS.
+This repository manages **7 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
 | Project          | Service    | Image Repo                        | Image                                                |
 | ---------------- | ---------- | --------------------------------- | ---------------------------------------------------- |
 | `bobine`         | `bobine`   | `denoland/deno`                   | `denoland/deno:debian-2.6.3`                         |
+| `dockge`         | `dockge`   | `louislam/dockge`                 | `louislam/dockge:1`                                  |
 | `infra-db`       | `adminer`  | `adminer`                         | `adminer:5.3.0`                                      |
 | `infra-db`       | `postgres` | `bitnamilegacy/postgresql`        | `bitnamilegacy/postgresql:17.5.0`                    |
 | `n8n`            | `n8n`      | `n8nio/n8n`                       | `n8nio/n8n:2.1.5-amd64`                              |
@@ -36,7 +37,7 @@ This repository manages **6 self-hosted services** on my Synology NAS.
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `deno`, `n8n`, `postgresql`, `zeroclaw-runtime`.
+- Runtime technologies currently in play: `adminer`, `deno`, `dockge`, `n8n`, `postgresql`, `zeroclaw-runtime`.
 - Shared runtime networks: `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -105,6 +106,7 @@ These are the image build contexts currently present in the repo:
 | Name                                                                          | Source                  | Version |
 | ----------------------------------------------------------------------------- | ----------------------- | ------- |
 | <a name="module_bobine"></a> [bobine](#module_bobine)                         | ./modules/compose_stack | n/a     |
+| <a name="module_dockge"></a> [dockge](#module_dockge)                         | ./modules/compose_stack | n/a     |
 | <a name="module_infra_db"></a> [infra_db](#module_infra_db)                   | ./modules/compose_stack | n/a     |
 | <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a     |
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
@@ -115,6 +117,7 @@ These are the image build contexts currently present in the repo:
 | Name                                                                                                                                                        | Type     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | [synology_filestation_folder.bobine_local](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)    | resource |
+| [synology_filestation_folder.dockge_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)     | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)        | resource |
 
@@ -131,6 +134,7 @@ These are the image build contexts currently present in the repo:
 | <a name="input_deploy_ssh_private_key_path"></a> [deploy_ssh_private_key_path](#input_deploy_ssh_private_key_path)                         | Path to the SSH private key used by Ansible to reach the Synology NAS              | `string` | n/a                                                    |   yes    |
 | <a name="input_deploy_ssh_strict_host_key_checking"></a> [deploy_ssh_strict_host_key_checking](#input_deploy_ssh_strict_host_key_checking) | Whether Ansible should enforce SSH host key checking when deploying Compose stacks | `bool`   | `false`                                                |    no    |
 | <a name="input_deploy_ssh_user"></a> [deploy_ssh_user](#input_deploy_ssh_user)                                                             | SSH user used by Ansible to apply rendered Compose stacks on the Synology NAS      | `string` | `null`                                                 |    no    |
+| <a name="input_dockge_published_port"></a> [dockge_published_port](#input_dockge_published_port)                                           | Published port on the Synology host for Dockge                                     | `number` | `8083`                                                 |    no    |
 | <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                                                                  | The hostname of my Synology DSM instance                                           | `string` | n/a                                                    |   yes    |
 | <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                                                                      | DSM password                                                                       | `string` | n/a                                                    |   yes    |
 | <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                                                                  | DSM username                                                                       | `string` | n/a                                                    |   yes    |
