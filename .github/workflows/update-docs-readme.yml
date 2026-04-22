@@ -27,8 +27,6 @@ concurrency:
 jobs:
   docs-update-readme:
     runs-on: ubuntu-22.04
-    env:
-      DOCS_VENV: ${{ runner.temp }}/readme-docs-venv
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -48,6 +46,9 @@ jobs:
         uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
         with:
           just-version: '1.42.4'
+
+      - name: Configure documentation environment
+        run: echo "DOCS_VENV=$RUNNER_TEMP/readme-docs-venv" >> "$GITHUB_ENV"
 
       - name: Install documentation dependencies
         run: |
