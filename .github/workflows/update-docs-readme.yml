@@ -27,6 +27,8 @@ concurrency:
 jobs:
   docs-update-readme:
     runs-on: ubuntu-22.04
+    env:
+      DOCS_VENV: ${{ runner.temp }}/readme-docs-venv
     steps:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -49,8 +51,8 @@ jobs:
 
       - name: Install documentation dependencies
         run: |
-          python3 -m venv .venv-docs
-          . .venv-docs/bin/activate
+          python3 -m venv "$DOCS_VENV"
+          . "$DOCS_VENV/bin/activate"
           python3 -m pip install --disable-pip-version-check -r .github/python/requirements.txt
 
       - name: Generate Terraform docs
@@ -65,7 +67,6 @@ jobs:
       # objects owned by root, which breaks the later auto-commit step.
       - name: Restore Git metadata ownership after terraform-docs
         run: sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE/.git"
-
 
       - name: Generate Just recipes
         run: |
@@ -88,12 +89,12 @@ jobs:
 
       - name: Generate deployed services overview
         run: |
-          . .venv-docs/bin/activate
+          . "$DOCS_VENV/bin/activate"
           python3 .github/scripts/render_readme_overview.py README.md
 
       - name: Generate built Docker images section
         run: |
-          . .venv-docs/bin/activate
+          . "$DOCS_VENV/bin/activate"
           python3 .github/scripts/render_readme_docker_images.py README.md
 
       - name: Prettify README.md
