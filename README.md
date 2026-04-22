@@ -18,19 +18,26 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **0 self-hosted services** on my Synology NAS.
+This repository manages **6 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
-| Project | Service | Image Repo | Image |
-| ------- | ------- | ---------- | ----- |
+| Project          | Service    | Image Repo                        | Image                                                |
+| ---------------- | ---------- | --------------------------------- | ---------------------------------------------------- |
+| `bobine`         | `bobine`   | `denoland/deno`                   | `denoland/deno:debian-2.6.3`                         |
+| `infra-db`       | `adminer`  | `adminer`                         | `adminer:5.3.0`                                      |
+| `infra-db`       | `postgres` | `bitnamilegacy/postgresql`        | `bitnamilegacy/postgresql:17.5.0`                    |
+| `n8n`            | `n8n`      | `n8nio/n8n`                       | `n8nio/n8n:2.1.5-amd64`                              |
+| `zeroclaw-cyrus` | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04` |
+| `zeroclaw-lior`  | `zeroclaw` | `ghcr.io/ccamel/zeroclaw-runtime` | `ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04` |
 
 ### Platform Building Blocks
 
-- Infrastructure state is managed by `Terraform` via `"synology-community/synology"` ("~> 0.4").
+- Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: .
+- Runtime technologies currently in play: `adminer`, `deno`, `n8n`, `postgresql`, `zeroclaw-runtime`.
+- Shared runtime networks: `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
 ## Philosophy
