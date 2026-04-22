@@ -61,6 +61,12 @@ jobs:
           output-format: markdown
           git-push: 'false'
 
+      # terraform-docs/gh-actions runs as a Docker action and can leave .git
+      # objects owned by root, which breaks the later auto-commit step.
+      - name: Restore Git metadata ownership after terraform-docs
+        run: sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE/.git"
+
+
       - name: Generate Just recipes
         run: |
           echo "📝 Generating Just recipes"
