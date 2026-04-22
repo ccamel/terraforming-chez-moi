@@ -1,0 +1,26 @@
+services:
+  dockge:
+    image: louislam/dockge:1
+    container_name: dockge-dockge
+    ports:
+      - "$${DOCKGE_PUBLISHED_PORT}:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      - $${DOCKGE_STACKS_DIR}:$${DOCKGE_STACKS_DIR}
+    environment:
+      DOCKGE_STACKS_DIR: $${DOCKGE_STACKS_DIR}
+      PUID: "1028"
+      PGID: "100"
+      TZ: Europe/Paris
+    restart: unless-stopped
+    networks:
+      - edge_net
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: edge
+
