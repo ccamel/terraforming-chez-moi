@@ -70,7 +70,9 @@ jobs:
             for path in "${!unique_paths[@]}"; do
               dockerfiles+=("${path}/Dockerfile")
             done
-            IFS=$'\n' dockerfiles=($(printf '%s\n' "${dockerfiles[@]}" | sort))
+            if [[ "${#dockerfiles[@]}" -gt 0 ]]; then
+              mapfile -t dockerfiles < <(printf '%s\n' "${dockerfiles[@]}" | sort)
+            fi
           fi
 
           if [[ "${#dockerfiles[@]}" -eq 0 ]]; then
@@ -81,6 +83,7 @@ jobs:
 
           config='[]'
           for dockerfile in "${dockerfiles[@]}"; do
+            [[ -n "${dockerfile}" ]] || continue
             path="$(dirname "${dockerfile}")"
             version="$(basename "${path}")"
             name="$(basename "$(dirname "${path}")")"
