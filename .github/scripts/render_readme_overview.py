@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import ast
 import re
 import sys
 from dataclasses import dataclass
@@ -45,12 +46,42 @@ def load_tf_directory(directory: Path) -> dict[str, list[Any]]:
     return combined
 
 
+def normalize_hcl_string(value: str) -> str:
+    value = value.strip()
+    if len(value) < 2 or value[0] != '"' or value[-1] != '"':
+        return value
+
+    try:
+        unquoted = ast.literal_eval(value)
+    except (SyntaxError, ValueError):
+        return value
+
+    return unquoted if isinstance(unquoted, str) else value
+
+
+def normalize_hcl_value(value: Any) -> Any:
+    if isinstance(value, list):
+        return [normalize_hcl_value(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            normalize_hcl_string(key)
+            if isinstance(key, str)
+            else key: normalize_hcl_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, str):
+        return normalize_hcl_string(value)
+    return value
+
+
 def collect_variable_defaults(module_data: dict[str, list[Any]]) -> dict[str, Any]:
     defaults: dict[str, Any] = {}
     for block in module_data.get("variable", []):
         for name, attrs in block.items():
             if "default" in attrs:
-                defaults[name] = attrs["default"]
+                defaults[normalize_hcl_string(name)] = normalize_hcl_value(
+                    attrs["default"]
+                )
     return defaults
 
 
@@ -64,7 +95,7 @@ def build_context(
     ctx = EvalContext(variables=variables, locals={})
     for block in module_data.get("locals", []):
         for name, value in block.items():
-            ctx.locals[name] = evaluate(value, ctx)
+            ctx.locals[normalize_hcl_string(name)] = evaluate(value, ctx)
     return ctx
 
 
@@ -75,6 +106,8 @@ def evaluate(value: Any, ctx: EvalContext) -> Any:
         return {key: evaluate(item, ctx) for key, item in value.items()}
     if not isinstance(value, str):
         return value
+
+    value = normalize_hcl_string(value)
 
     full_match = FULL_EXPR_RE.match(value)
     if full_match:
@@ -186,7 +219,9 @@ def render_compose_networks(
 def collect_compose_template_services(
     project_name: str, template_path: Path, template_variables: dict[str, Any]
 ) -> list[ServiceRecord]:
-    compose_data = yaml.safe_load(render_compose_template(template_path, template_variables))
+    compose_data = yaml.safe_load(
+        render_compose_template(template_path, template_variables)
+    )
     project_networks = compose_data.get("networks", {})
 
     services: list[ServiceRecord] = []
@@ -213,10 +248,12 @@ def collect_compose_stack_services(
 
     for module_block in root_data.get("module", []):
         for _, attrs in module_block.items():
-            source = attrs.get("source")
+            source = stringify(evaluate(attrs.get("source"), root_ctx))
             if source == "./modules/compose_stack":
                 project_name = stringify(
-                    evaluate(attrs.get("project_name", attrs.get("stack_name")), root_ctx)
+                    evaluate(
+                        attrs.get("project_name", attrs.get("stack_name")), root_ctx
+                    )
                 )
                 template_path = extract_template_path(attrs.get("compose_yaml"))
                 if template_path is None:
@@ -244,7 +281,9 @@ def collect_compose_stack_services(
                         template_path=module_dir / "templates/compose.yaml.tftpl",
                         template_variables={
                             "project_name": module_ctx.locals["project_name"],
-                            "edge_network_name": module_ctx.variables["edge_network_name"],
+                            "edge_network_name": module_ctx.variables[
+                                "edge_network_name"
+                            ],
                             "image": module_ctx.variables["image"],
                             "published_port": module_ctx.variables["published_port"],
                         },
@@ -262,11 +301,16 @@ def collect_services(
 
     for module_block in root_data.get("module", []):
         for _, attrs in module_block.items():
-            source = attrs.get("source")
-            if not isinstance(source, str) or not source.startswith("./") or source in {
-                "./modules/compose_stack",
-                "./modules/zeroclaw",
-            }:
+            source = stringify(evaluate(attrs.get("source"), root_ctx))
+            if (
+                not isinstance(source, str)
+                or not source.startswith("./")
+                or source
+                in {
+                    "./modules/compose_stack",
+                    "./modules/zeroclaw",
+                }
+            ):
                 continue
 
             module_dir = (ROOT / source).resolve()
@@ -298,12 +342,14 @@ def collect_provider_versions(root_data: dict[str, list[Any]]) -> list[str]:
             return
 
         for name, attrs in node.items():
-            if isinstance(attrs, dict) and (
-                "source" in attrs or "version" in attrs
-            ):
-                source = stringify(attrs.get("source", name))
+            if isinstance(attrs, dict) and ("source" in attrs or "version" in attrs):
+                source = stringify(normalize_hcl_value(attrs.get("source", name)))
                 version = attrs.get("version")
-                discovered[source] = stringify(version) if version is not None else None
+                discovered[source] = (
+                    stringify(normalize_hcl_value(version))
+                    if version is not None
+                    else None
+                )
             else:
                 walk(attrs)
 
@@ -403,6 +449,11 @@ def main() -> int:
     root_data = load_tf_directory(ROOT)
     root_ctx = build_context(root_data)
     services = collect_services(root_data, root_ctx)
+    if not services:
+        raise SystemExit(
+            "No runtime services found; refusing to render an empty overview"
+        )
+
     providers = collect_provider_versions(root_data)
     overview = render_overview(services, providers)
     update_readme(readme_path, overview)
