@@ -1,4 +1,4 @@
 PyYAML==6.0.3
 python-hcl2==8.1.2
-ruff==0.15.9
+ruff==0.15.12
 tabulate==0.10.0
