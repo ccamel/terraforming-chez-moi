@@ -91,19 +91,19 @@ These are the image build contexts currently present in the repo:
 
 <!-- BEGIN_TF_DOCS -->
 
-### Requirements
+## Requirements
 
 | Name                                                                  | Version |
 | --------------------------------------------------------------------- | ------- |
 | <a name="requirement_synology"></a> [synology](#requirement_synology) | ~> 0.4  |
 
-### Providers
+## Providers
 
 | Name                                                            | Version |
 | --------------------------------------------------------------- | ------- |
 | <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.10  |
 
-### Modules
+## Modules
 
 | Name                                                                          | Source                  | Version |
 | ----------------------------------------------------------------------------- | ----------------------- | ------- |
@@ -115,7 +115,7 @@ These are the image build contexts currently present in the repo:
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
 | <a name="module_zeroclaw_lior"></a> [zeroclaw_lior](#module_zeroclaw_lior)    | ./modules/zeroclaw      | n/a     |
 
-### Resources
+## Resources
 
 | Name                                                                                                                                                              | Type     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -125,7 +125,7 @@ These are the image build contexts currently present in the repo:
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)              | resource |
 
-### Inputs
+## Inputs
 
 | Name                                                                                                                                       | Description                                                                        | Type     | Default                                                | Required |
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | -------- | ------------------------------------------------------ | :------: |
@@ -156,7 +156,7 @@ These are the image build contexts currently present in the repo:
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                                   | Username for the PostgreSQL service                                                | `string` | `"postgres-user"`                                      |    no    |
 | <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04"` |    no    |
 
-### Outputs
+## Outputs
 
 No outputs.
 
