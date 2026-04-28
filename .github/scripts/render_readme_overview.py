@@ -262,7 +262,7 @@ def collect_compose_stack_services(
                     collect_compose_template_services(
                         project_name=project_name,
                         template_path=template_path,
-                        template_variables={},
+                        template_variables=root_ctx.variables,
                     )
                 )
             elif source == "./modules/zeroclaw":
