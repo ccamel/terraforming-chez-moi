@@ -1,0 +1,17 @@
+services:
+  home-assistant:
+    image: ${home_assistant_image}
+    container_name: home-assistant
+    network_mode: host
+    privileged: true
+    environment:
+      TZ: Europe/Paris
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    devices:
+      - ${home_assistant_usb_device}:${home_assistant_usb_device}
+    restart: unless-stopped
+    logging:
+      driver: json-file

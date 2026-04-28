@@ -14,7 +14,7 @@ locals {
     project_name      = local.project_name
     remote_dir        = var.remote_dir
     compose_yaml      = var.compose_yaml
-    env_file          = coalesce(var.env_file, "")
+    env_file          = var.env_file == null ? "" : var.env_file
     extra_files       = local.extra_files
     external_networks = var.external_networks
   }
@@ -47,7 +47,7 @@ resource "terraform_data" "this" {
     var.remote_dir,
     sha256(var.compose_yaml),
     sha256(jsonencode(var.external_networks)),
-    sha256(coalesce(var.env_file, "")),
+    sha256(var.env_file == null ? "" : var.env_file),
     sha256(local.extra_files_checksum),
   ]
 
