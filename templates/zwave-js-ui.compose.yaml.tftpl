@@ -1,0 +1,18 @@
+services:
+  zwave-js-ui:
+    image: ${zwave_js_ui_image}
+    container_name: zwave-js-ui
+    tty: true
+    stop_signal: SIGINT
+    ports:
+      - "$${ZWAVE_JS_UI_PUBLISHED_PORT}:8091"
+      - "$${ZWAVE_JS_UI_WS_PUBLISHED_PORT}:3000"
+    devices:
+      - "$${ZWAVE_JS_UI_USB_DEVICE}:/dev/zwave"
+    volumes:
+      - ./store:/usr/src/app/store
+    environment:
+      TZ: Europe/Paris
+    restart: unless-stopped
+    logging:
+      driver: json-file
