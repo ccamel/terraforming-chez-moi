@@ -10,8 +10,6 @@ services:
       - ./config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
-    devices:
-      - ${home_assistant_usb_device}:${home_assistant_usb_device}
     restart: unless-stopped
     logging:
       driver: json-file
