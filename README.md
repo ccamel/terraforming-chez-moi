@@ -103,7 +103,7 @@ These are the image build contexts currently present in the repo:
 
 | Name                                                            | Version |
 | --------------------------------------------------------------- | ------- |
-| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.10  |
+| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.11  |
 
 ## Modules
 
