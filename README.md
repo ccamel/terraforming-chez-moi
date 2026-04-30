@@ -18,7 +18,7 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **8 self-hosted services** on my Synology NAS.
+This repository manages **9 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
@@ -32,13 +32,14 @@ This repository manages **8 self-hosted services** on my Synology NAS.
 | `n8n`            | `n8n`            | `n8nio/n8n`                             | `n8nio/n8n:2.1.5-amd64`                              |
 | `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04` |
 | `zeroclaw-lior`  | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04` |
+| `zwave-js-ui`    | `zwave-js-ui`    | `zwavejs/zwave-js-ui`                   | `zwavejs/zwave-js-ui:latest`                         |
 
 ### Platform Building Blocks
 
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `deno`, `dockge`, `home-assistant`, `n8n`, `postgresql`, `zeroclaw-runtime`.
+- Runtime technologies currently in play: `adminer`, `deno`, `dockge`, `home-assistant`, `n8n`, `postgresql`, `zeroclaw-runtime`, `zwave-js-ui`.
 - Shared runtime networks: `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -114,6 +115,7 @@ These are the image build contexts currently present in the repo:
 | <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a     |
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
 | <a name="module_zeroclaw_lior"></a> [zeroclaw_lior](#module_zeroclaw_lior)    | ./modules/zeroclaw      | n/a     |
+| <a name="module_zwave_js_ui"></a> [zwave_js_ui](#module_zwave_js_ui)          | ./modules/compose_stack | n/a     |
 
 ## Resources
 
@@ -124,6 +126,7 @@ These are the image build contexts currently present in the repo:
 | [synology_filestation_folder.home_assistant_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)              | resource |
+| [synology_filestation_folder.zwave_js_ui_store](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)     | resource |
 
 ## Inputs
 
@@ -144,7 +147,6 @@ These are the image build contexts currently present in the repo:
 | <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                                                                  | DSM username                                                                       | `string` | n/a                                                    |   yes    |
 | <a name="input_dsm_volume_projects"></a> [dsm_volume_projects](#input_dsm_volume_projects)                                                 | Root path for projects volume on DSM                                               | `string` | `"/projects"`                                          |    no    |
 | <a name="input_home_assistant_image"></a> [home_assistant_image](#input_home_assistant_image)                                              | Home Assistant Container image                                                     | `string` | `"ghcr.io/home-assistant/home-assistant:stable"`       |    no    |
-| <a name="input_home_assistant_usb_device"></a> [home_assistant_usb_device](#input_home_assistant_usb_device)                               | Z-Wave USB device path exposed to the Home Assistant container                     | `string` | `"/dev/ttyUSB0"`                                       |    no    |
 | <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)                                                    | Encryption key for n8n sensitive data                                              | `string` | `"my-32-character-random-string"`                      |    no    |
 | <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                                                                  | Host/IP that n8n should bind to (passed to the container as N8N_HOST)              | `string` | `"0.0.0.0"`                                            |    no    |
 | <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                                                             | PostgreSQL database name for n8n                                                   | `string` | `"n8n-db-name"`                                        |    no    |
@@ -155,6 +157,10 @@ These are the image build contexts currently present in the repo:
 | <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                                       | Password for the PostgreSQL service                                                | `string` | `"postgres-password"`                                  |    no    |
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                                   | Username for the PostgreSQL service                                                | `string` | `"postgres-user"`                                      |    no    |
 | <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04"` |    no    |
+| <a name="input_zwave_js_ui_image"></a> [zwave_js_ui_image](#input_zwave_js_ui_image)                                                       | Z-Wave JS UI image                                                                 | `string` | `"zwavejs/zwave-js-ui:latest"`                         |    no    |
+| <a name="input_zwave_js_ui_published_port"></a> [zwave_js_ui_published_port](#input_zwave_js_ui_published_port)                            | Published port on the Synology host for the Z-Wave JS UI web interface             | `number` | `8091`                                                 |    no    |
+| <a name="input_zwave_js_ui_usb_device"></a> [zwave_js_ui_usb_device](#input_zwave_js_ui_usb_device)                                        | Z-Wave USB device path exposed to the Z-Wave JS UI container                       | `string` | `"/dev/ttyUSB0"`                                       |    no    |
+| <a name="input_zwave_js_ui_ws_published_port"></a> [zwave_js_ui_ws_published_port](#input_zwave_js_ui_ws_published_port)                   | Published port on the Synology host for the Z-Wave JS WebSocket server             | `number` | `3000`                                                 |    no    |
 
 ## Outputs
 
