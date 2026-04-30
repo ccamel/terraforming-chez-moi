@@ -1,0 +1,55 @@
+services:
+  permfix:
+    image: alpine:3.22
+    container_name: uptime-kuma-permfix
+    user: "0:0"
+    volumes:
+      - ./data:/fix
+    entrypoint:
+      - sh
+      - -lc
+    command:
+      - chown -R 1000:1000 /fix && chmod 755 /fix && echo OK
+    restart: "no"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "[ -f /bin/true ] || exit 1"
+      interval: 10s
+      timeout: 2s
+      retries: 1
+      start_period: 1s
+    logging:
+      driver: json-file
+
+  uptime-kuma:
+    image: ${uptime_kuma_image}
+    container_name: uptime-kuma
+    ports:
+      - "$${UPTIME_KUMA_PUBLISHED_PORT}:3001"
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TZ: Europe/Paris
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --no-verbose --tries=1 --spider http://127.0.0.1:3001 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - edge_net
+    depends_on:
+      permfix:
+        condition: service_completed_successfully
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: edge
