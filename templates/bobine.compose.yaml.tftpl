@@ -26,6 +26,12 @@ services:
     image: denoland/deno:debian-2.6.3
     container_name: bobine-bobine
     user: "1000:1000"
+    labels:
+      - homepage.group=Automation
+      - homepage.name=bobine
+      - homepage.icon=deno.png
+      - homepage.href=${bobine_url}
+      - homepage.description=Script automation service
     ports:
       - "$${BOBINE_PUBLISHED_PORT}:8080"
     volumes:

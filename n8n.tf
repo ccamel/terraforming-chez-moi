@@ -18,7 +18,9 @@ module "n8n" {
   ssh_port                     = var.deploy_ssh_port
   ssh_private_key_path         = var.deploy_ssh_private_key_path
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
-  compose_yaml                 = templatefile("${path.module}/templates/n8n.compose.yaml.tftpl", {})
+  compose_yaml = templatefile("${path.module}/templates/n8n.compose.yaml.tftpl", {
+    n8n_url = var.n8n_url
+  })
   external_networks = [
     {
       name     = "infra"

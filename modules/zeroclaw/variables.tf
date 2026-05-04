@@ -30,6 +30,23 @@ variable "edge_network_name" {
   default     = "edge"
 }
 
+variable "homepage_group" {
+  description = "Homepage group label for this ZeroClaw instance"
+  type        = string
+  default     = "Agents"
+}
+
+variable "homepage_name" {
+  description = "Homepage display name for this ZeroClaw instance"
+  type        = string
+}
+
+variable "homepage_href" {
+  description = "Homepage browser-visible URL for this ZeroClaw instance"
+  type        = string
+  sensitive   = true
+}
+
 variable "deploy_ssh_host" {
   description = "SSH host used by Ansible to apply rendered Compose stacks"
   type        = string

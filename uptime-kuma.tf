@@ -20,6 +20,7 @@ module "uptime_kuma" {
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
   compose_yaml = templatefile("${path.module}/templates/uptime-kuma.compose.yaml.tftpl", {
     uptime_kuma_image = var.uptime_kuma_image
+    uptime_kuma_url   = var.uptime_kuma_url
   })
   external_networks = [
     {

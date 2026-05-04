@@ -20,6 +20,7 @@ module "home_assistant" {
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
   compose_yaml = templatefile("${path.module}/templates/home-assistant.compose.yaml.tftpl", {
     home_assistant_image = var.home_assistant_image
+    home_assistant_url   = var.home_assistant_url
   })
 
   depends_on = [

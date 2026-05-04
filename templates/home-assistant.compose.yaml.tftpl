@@ -2,6 +2,12 @@ services:
   home-assistant:
     image: ${home_assistant_image}
     container_name: home-assistant
+    labels:
+      - homepage.group=Smart Home
+      - homepage.name=Home Assistant
+      - homepage.icon=home-assistant.png
+      - homepage.href=${home_assistant_url}
+      - homepage.description=Home automation hub
     network_mode: host
     privileged: true
     environment:

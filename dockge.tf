@@ -18,7 +18,9 @@ module "dockge" {
   ssh_port                     = var.deploy_ssh_port
   ssh_private_key_path         = var.deploy_ssh_private_key_path
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
-  compose_yaml                 = templatefile("${path.module}/templates/dockge.compose.yaml.tftpl", {})
+  compose_yaml = templatefile("${path.module}/templates/dockge.compose.yaml.tftpl", {
+    dockge_url = var.dockge_url
+  })
   external_networks = [
     {
       name     = "edge"

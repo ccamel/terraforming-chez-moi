@@ -20,6 +20,7 @@ module "zwave_js_ui" {
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
   compose_yaml = templatefile("${path.module}/templates/zwave-js-ui.compose.yaml.tftpl", {
     zwave_js_ui_image = var.zwave_js_ui_image
+    zwave_js_ui_url   = var.zwave_js_ui_url
   })
   env_file = templatefile("${path.module}/templates/zwave-js-ui.env.tftpl", {
     zwave_js_ui_published_port    = var.zwave_js_ui_published_port

@@ -35,6 +35,9 @@ module "compose_stack" {
     edge_network_name = var.edge_network_name
     image             = var.image
     published_port    = var.published_port
+    homepage_group    = var.homepage_group
+    homepage_name     = var.homepage_name
+    homepage_href     = var.homepage_href
   })
   external_networks = [
     {
