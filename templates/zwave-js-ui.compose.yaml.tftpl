@@ -2,6 +2,12 @@ services:
   zwave-js-ui:
     image: ${zwave_js_ui_image}
     container_name: zwave-js-ui
+    labels:
+      - homepage.group=Smart Home
+      - homepage.name=Z-Wave JS UI
+      - homepage.icon=zwave-js-ui.png
+      - homepage.href=${zwave_js_ui_url}
+      - homepage.description=Z-Wave control panel
     tty: true
     stop_signal: SIGINT
     ports:

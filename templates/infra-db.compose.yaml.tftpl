@@ -51,6 +51,12 @@ services:
   adminer:
     image: adminer:5.3.0
     container_name: infra-db-adminer
+    labels:
+      - homepage.group=Infrastructure
+      - homepage.name=Adminer
+      - homepage.icon=adminer.png
+      - homepage.href=${adminer_url}
+      - homepage.description=Database admin UI
     ports:
       - "$${ADMINER_PUBLISHED_PORT}:8080"
     environment:

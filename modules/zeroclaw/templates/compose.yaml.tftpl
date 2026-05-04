@@ -2,6 +2,12 @@ services:
   zeroclaw:
     image: ${image}
     container_name: ${project_name}
+    labels:
+      - homepage.group=${homepage_group}
+      - homepage.name=${homepage_name}
+      - homepage.icon=github-light.png
+      - homepage.href=${homepage_href}
+      - homepage.description=ZeroClaw agent runtime
     command:
       - zeroclaw
       - daemon

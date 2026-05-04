@@ -18,7 +18,9 @@ module "bobine" {
   ssh_port                     = var.deploy_ssh_port
   ssh_private_key_path         = var.deploy_ssh_private_key_path
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
-  compose_yaml                 = templatefile("${path.module}/templates/bobine.compose.yaml.tftpl", {})
+  compose_yaml = templatefile("${path.module}/templates/bobine.compose.yaml.tftpl", {
+    bobine_url = var.bobine_url
+  })
   external_networks = [
     {
       name     = "edge"

@@ -5,6 +5,8 @@ module "zeroclaw_cyrus" {
   projects_root                       = var.dsm_volume_projects
   published_port                      = 42617
   image                               = var.zeroclaw_image
+  homepage_name                       = "ZeroClaw Cyrus"
+  homepage_href                       = var.zeroclaw_cyrus_url
   deploy_ssh_host                     = local.compose_deploy_ssh_host
   deploy_ssh_user                     = local.compose_deploy_ssh_user
   deploy_ssh_port                     = var.deploy_ssh_port
@@ -19,6 +21,8 @@ module "zeroclaw_lior" {
   projects_root                       = var.dsm_volume_projects
   published_port                      = 42618
   image                               = var.zeroclaw_image
+  homepage_name                       = "ZeroClaw Lior"
+  homepage_href                       = var.zeroclaw_lior_url
   deploy_ssh_host                     = local.compose_deploy_ssh_host
   deploy_ssh_user                     = local.compose_deploy_ssh_user
   deploy_ssh_port                     = var.deploy_ssh_port

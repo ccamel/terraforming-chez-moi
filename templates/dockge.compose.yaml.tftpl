@@ -2,6 +2,12 @@ services:
   dockge:
     image: louislam/dockge:1
     container_name: dockge-dockge
+    labels:
+      - homepage.group=Infrastructure
+      - homepage.name=Dockge
+      - homepage.icon=dockge.png
+      - homepage.href=${dockge_url}
+      - homepage.description=Compose stack manager
     ports:
       - "$${DOCKGE_PUBLISHED_PORT}:5001"
     volumes:
@@ -23,4 +29,3 @@ networks:
   edge_net:
     external: true
     name: edge
-

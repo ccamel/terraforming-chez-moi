@@ -25,6 +25,12 @@ services:
   uptime-kuma:
     image: ${uptime_kuma_image}
     container_name: uptime-kuma
+    labels:
+      - homepage.group=Infrastructure
+      - homepage.name=Uptime Kuma
+      - homepage.icon=uptime-kuma.png
+      - homepage.href=${uptime_kuma_url}
+      - homepage.description=Status and uptime monitoring
     ports:
       - "$${UPTIME_KUMA_PUBLISHED_PORT}:3001"
     volumes:

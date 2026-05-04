@@ -67,6 +67,12 @@ services:
   n8n:
     image: n8nio/n8n:2.1.5-amd64
     container_name: n8n-n8n
+    labels:
+      - homepage.group=Automation
+      - homepage.name=n8n
+      - homepage.icon=n8n.png
+      - homepage.href=${n8n_url}
+      - homepage.description=Workflow automation
     ports:
       - "$${N8N_PUBLISHED_PORT}:5678"
     environment:
