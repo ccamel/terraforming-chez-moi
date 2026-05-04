@@ -1,0 +1,58 @@
+services:
+  dockerproxy:
+    image: ${homepage_docker_socket_proxy_image}
+    container_name: homepage-dockerproxy
+    environment:
+      CONTAINERS: "1"
+      SERVICES: "1"
+      TASKS: "1"
+      POST: "0"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    networks:
+      - docker_net
+    logging:
+      driver: json-file
+
+  homepage:
+    image: ${homepage_image}
+    container_name: homepage
+    labels:
+      - homepage.group=Infrastructure
+      - homepage.name=Homepage
+      - homepage.icon=homepage.png
+      - homepage.href=${homepage_url}
+      - homepage.description=Application dashboard
+    ports:
+      - "$${HOMEPAGE_PUBLISHED_PORT}:3000"
+    volumes:
+      - ./config:/app/config
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: $${HOMEPAGE_ALLOWED_HOSTS}
+      TZ: Europe/Paris
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "fetch('http://127.0.0.1:3000').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - edge_net
+      - docker_net
+    depends_on:
+      - dockerproxy
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: edge
+
+  docker_net:
+    internal: true
