@@ -33,8 +33,8 @@ This repository manages **12 self-hosted services** on my Synology NAS.
 | `infra-db`       | `postgres`       | `bitnamilegacy/postgresql`              | `bitnamilegacy/postgresql:17.5.0`                    |
 | `n8n`            | `n8n`            | `n8nio/n8n`                             | `n8nio/n8n:2.1.5-amd64`                              |
 | `uptime-kuma`    | `uptime-kuma`    | `louislam/uptime-kuma`                  | `louislam/uptime-kuma:2`                             |
-| `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04` |
-| `zeroclaw-lior`  | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04` |
+| `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.5-ubuntu24.04` |
+| `zeroclaw-lior`  | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.7.5-ubuntu24.04` |
 | `zwave-js-ui`    | `zwave-js-ui`    | `zwavejs/zwave-js-ui`                   | `zwavejs/zwave-js-ui:latest`                         |
 
 ### Platform Building Blocks
@@ -88,6 +88,7 @@ These are the image build contexts currently present in the repo:
 | `zeroclaw-runtime` | `v0.6.8-ubuntu24.04` | `linux/amd64,linux/arm64,linux/arm/v7` | [`ghcr.io/ccamel/zeroclaw-runtime:v0.6.8-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.8-ubuntu24.04/Dockerfile) |
 | `zeroclaw-runtime` | `v0.6.9-ubuntu24.04` | `linux/amd64,linux/arm64,linux/arm/v7` | [`ghcr.io/ccamel/zeroclaw-runtime:v0.6.9-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.6.9-ubuntu24.04/Dockerfile) |
 | `zeroclaw-runtime` | `v0.7.3-ubuntu24.04` | `linux/amd64`                          | [`ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.7.3-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.7.3-ubuntu24.04/Dockerfile) |
+| `zeroclaw-runtime` | `v0.7.5-ubuntu24.04` | `linux/amd64`                          | [`ghcr.io/ccamel/zeroclaw-runtime:v0.7.5-ubuntu24.04`](https://github.com/ccamel/terraforming-chez-moi/pkgs/container/zeroclaw-runtime) | [`docker/zeroclaw-runtime/v0.7.5-ubuntu24.04/Dockerfile`](docker/zeroclaw-runtime/v0.7.5-ubuntu24.04/Dockerfile) |
 
 <!-- END_BUILT_DOCKER_IMAGES -->
 
@@ -177,7 +178,7 @@ These are the image build contexts currently present in the repo:
 | <a name="input_uptime_kuma_published_port"></a> [uptime_kuma_published_port](#input_uptime_kuma_published_port)                            | Published port on the Synology host for Uptime Kuma                                | `number` | `8084`                                                 |    no    |
 | <a name="input_uptime_kuma_url"></a> [uptime_kuma_url](#input_uptime_kuma_url)                                                             | Browser-visible URL for Uptime Kuma, without a trailing slash                      | `string` | n/a                                                    |   yes    |
 | <a name="input_zeroclaw_cyrus_url"></a> [zeroclaw_cyrus_url](#input_zeroclaw_cyrus_url)                                                    | Browser-visible URL for ZeroClaw Cyrus, without a trailing slash                   | `string` | n/a                                                    |   yes    |
-| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.7.3-ubuntu24.04"` |    no    |
+| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.7.5-ubuntu24.04"` |    no    |
 | <a name="input_zeroclaw_lior_url"></a> [zeroclaw_lior_url](#input_zeroclaw_lior_url)                                                       | Browser-visible URL for ZeroClaw Lior, without a trailing slash                    | `string` | n/a                                                    |   yes    |
 | <a name="input_zwave_js_ui_image"></a> [zwave_js_ui_image](#input_zwave_js_ui_image)                                                       | Z-Wave JS UI image                                                                 | `string` | `"zwavejs/zwave-js-ui:latest"`                         |    no    |
 | <a name="input_zwave_js_ui_published_port"></a> [zwave_js_ui_published_port](#input_zwave_js_ui_published_port)                            | Published port on the Synology host for the Z-Wave JS UI web interface             | `number` | `8091`                                                 |    no    |
