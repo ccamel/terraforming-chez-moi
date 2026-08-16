@@ -47,6 +47,9 @@
               pkgs.python3Packages.virtualenv
               pkgs.pyright
               pkgs.shellcheck
+              pkgs.deadnix
+              pkgs.nixfmt
+              pkgs.statix
               pkgs.terraform
               pkgs.tflint
               pkgs.terraform-ls
