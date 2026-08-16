@@ -32,18 +32,26 @@
               pkgs.actionlint
               pkgs.ansible
               pkgs.ansible-lint
+              pkgs.ansible-language-server
+              pkgs.bash-language-server
               pkgs.docker
               pkgs.docker-compose
+              pkgs.dockerfile-language-server
               pkgs.git
               pkgs.go
               pkgs.just
+              pkgs.marksman
+              pkgs.nil
               pkgs.python3
               pkgs.python3Packages.pip
               pkgs.python3Packages.virtualenv
+              pkgs.pyright
               pkgs.shellcheck
               pkgs.terraform
               pkgs.tflint
+              pkgs.terraform-ls
               pkgs.yamllint
+              pkgs.yaml-language-server
             ];
 
             shellHook = ''
