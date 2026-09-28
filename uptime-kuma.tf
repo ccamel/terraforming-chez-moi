@@ -28,9 +28,6 @@ module "uptime_kuma" {
       internal = false
     },
   ]
-  env_file = templatefile("${path.module}/templates/uptime-kuma.env.tftpl", {
-    uptime_kuma_published_port = var.uptime_kuma_published_port
-  })
 
   depends_on = [
     synology_filestation_folder.uptime_kuma_data,

@@ -15,8 +15,6 @@ services:
       - 0.0.0.0
       - --port
       - "42617"
-    ports:
-      - "$${ZEROCLAW_PUBLISHED_PORT}:42617"
     volumes:
       - ./data:/root/.zeroclaw
     healthcheck:

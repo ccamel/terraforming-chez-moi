@@ -73,8 +73,6 @@ services:
       - homepage.icon=n8n.png
       - homepage.href=${n8n_url}
       - homepage.description=Workflow automation
-    ports:
-      - "$${N8N_PUBLISHED_PORT}:5678"
     environment:
       N8N_HOST: $${N8N_HOST}
       N8N_PORT: "5678"

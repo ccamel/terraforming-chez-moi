@@ -10,11 +10,6 @@ variable "homepage_docker_socket_proxy_image" {
   default     = "ghcr.io/tecnativa/docker-socket-proxy:v0.4.2"
 }
 
-variable "homepage_published_port" {
-  description = "Published port on the Synology host for Homepage"
-  type        = number
-  default     = 8085
-}
 
 variable "homepage_allowed_hosts" {
   description = "Comma-separated hostnames and host:port values allowed by Homepage"

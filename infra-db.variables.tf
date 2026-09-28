@@ -11,9 +11,3 @@ variable "postgres_password" {
   default     = "postgres-password"
   sensitive   = true
 }
-
-variable "adminer_published_port" {
-  description = "Published port on the Synology host for Adminer web UI"
-  type        = number
-  default     = 8081
-}

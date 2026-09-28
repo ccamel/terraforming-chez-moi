@@ -31,8 +31,6 @@ services:
       - homepage.icon=uptime-kuma.png
       - homepage.href=${uptime_kuma_url}
       - homepage.description=Status and uptime monitoring
-    ports:
-      - "$${UPTIME_KUMA_PUBLISHED_PORT}:3001"
     volumes:
       - ./data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro

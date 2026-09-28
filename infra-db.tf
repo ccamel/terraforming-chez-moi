@@ -32,9 +32,8 @@ module "infra_db" {
     },
   ]
   env_file = templatefile("${path.module}/templates/infra-db.env.tftpl", {
-    postgres_user          = var.postgres_user
-    postgres_password      = var.postgres_password
-    adminer_published_port = var.adminer_published_port
+    postgres_user     = var.postgres_user
+    postgres_password = var.postgres_password
   })
 
   depends_on = [
