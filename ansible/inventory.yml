@@ -1,0 +1,5 @@
+---
+all:
+  vars:
+    ansible_python_interpreter: /var/packages/Python3.9/target/usr/bin/python3.9
+    ansible_ssh_transfer_method: piped
