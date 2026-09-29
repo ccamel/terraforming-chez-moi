@@ -285,7 +285,6 @@ def collect_compose_stack_services(
                                 "edge_network_name"
                             ],
                             "image": module_ctx.variables["image"],
-                            "published_port": module_ctx.variables["published_port"],
                         },
                     )
                 )
