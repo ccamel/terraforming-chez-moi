@@ -42,7 +42,7 @@ jobs:
 
       - name: Validate Terraform files
         run: |
-          just init
+          terraform init -backend=false -input=false
           just validate
 
       - name: Check Terraform files format
