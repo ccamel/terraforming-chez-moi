@@ -4,7 +4,6 @@
 
 > 🪐 Personal Terraform configuration for shaping and managing my home infrastructure - including my Synology DS415+, self-hosted services, and all the weird experiments that come with being a geek at home.
 
-[![build](https://img.shields.io/github/actions/workflow/status/ccamel/terraforming-chez-moi/build-terraform.yml?branch=main&label=build%20terraform&style=for-the-badge&logo=github)](https://github.com/ccamel/terraforming-chez-moi/actions/workflows/build-terraform.yml)
 [![lint](https://img.shields.io/github/actions/workflow/status/ccamel/terraforming-chez-moi/lint-terraform.yml?branch=main&label=lint%20terraform&style=for-the-badge&logo=github)](https://github.com/ccamel/terraforming-chez-moi/actions/workflows/lint-terraform.yml)
 [![conventional commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=for-the-badge&logo=conventionalcommits)](https://conventionalcommits.org)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg?style=for-the-badge)](https://opensource.org/licenses/BSD-3-Clause)
