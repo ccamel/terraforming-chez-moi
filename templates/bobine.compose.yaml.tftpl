@@ -32,8 +32,6 @@ services:
       - homepage.icon=deno.png
       - homepage.href=${bobine_url}
       - homepage.description=Script automation service
-    ports:
-      - "$${BOBINE_PUBLISHED_PORT}:8080"
     volumes:
       - ./local:/app/local
     environment:

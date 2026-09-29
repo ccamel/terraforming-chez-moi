@@ -8,10 +8,6 @@ variable "projects_root" {
   type        = string
 }
 
-variable "published_port" {
-  description = "Published port on the Synology host for the ZeroClaw gateway"
-  type        = number
-}
 
 variable "image" {
   description = "ZeroClaw runtime image"

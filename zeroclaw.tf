@@ -3,7 +3,6 @@ module "zeroclaw_cyrus" {
 
   instance_name                       = "cyrus"
   projects_root                       = var.dsm_volume_projects
-  published_port                      = 42617
   image                               = var.zeroclaw_image
   homepage_name                       = "ZeroClaw Cyrus"
   homepage_href                       = var.zeroclaw_cyrus_url
@@ -19,7 +18,6 @@ module "zeroclaw_lior" {
 
   instance_name                       = "lior"
   projects_root                       = var.dsm_volume_projects
-  published_port                      = 42618
   image                               = var.zeroclaw_image
   homepage_name                       = "ZeroClaw Lior"
   homepage_href                       = var.zeroclaw_lior_url

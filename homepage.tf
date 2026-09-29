@@ -30,8 +30,7 @@ module "homepage" {
     },
   ]
   env_file = templatefile("${path.module}/templates/homepage.env.tftpl", {
-    homepage_published_port = var.homepage_published_port
-    homepage_allowed_hosts  = var.homepage_allowed_hosts
+    homepage_allowed_hosts = var.homepage_allowed_hosts
   })
   extra_files = {
     "config/bookmarks.yaml" = {

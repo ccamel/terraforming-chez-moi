@@ -34,7 +34,6 @@ module "n8n" {
   env_file = templatefile("${path.module}/templates/n8n.env.tftpl", {
     postgres_user         = var.postgres_user
     postgres_password     = var.postgres_password
-    n8n_published_port    = var.n8n_published_port
     n8n_host              = var.n8n_host
     n8n_webhook_url       = var.n8n_webhook_url
     n8n_encryption_key    = var.n8n_encryption_key

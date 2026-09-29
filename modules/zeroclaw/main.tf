@@ -34,7 +34,6 @@ module "compose_stack" {
     project_name      = local.project_name
     edge_network_name = var.edge_network_name
     image             = var.image
-    published_port    = var.published_port
     homepage_group    = var.homepage_group
     homepage_name     = var.homepage_name
     homepage_href     = var.homepage_href
@@ -45,9 +44,6 @@ module "compose_stack" {
       internal = false
     },
   ]
-  env_file = templatefile("${path.module}/templates/env.tftpl", {
-    published_port = var.published_port
-  })
 
   depends_on = [
     synology_filestation_folder.data,

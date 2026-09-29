@@ -11,7 +11,6 @@ services:
     tty: true
     stop_signal: SIGINT
     ports:
-      - "$${ZWAVE_JS_UI_PUBLISHED_PORT}:8091"
       - "$${ZWAVE_JS_UI_WS_PUBLISHED_PORT}:3000"
     devices:
       - "$${ZWAVE_JS_UI_USB_DEVICE}:/dev/zwave"

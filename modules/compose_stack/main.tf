@@ -21,8 +21,10 @@ locals {
 
   deploy_spec_b64 = base64encode(jsonencode(local.deploy_spec))
 
-  deploy_playbook  = abspath("${path.root}/ansible/deploy-compose-stack.yml")
-  destroy_playbook = abspath("${path.root}/ansible/destroy-compose-stack.yml")
+  deploy_playbook   = abspath("${path.root}/ansible/deploy-compose-stack.yml")
+  destroy_playbook  = abspath("${path.root}/ansible/destroy-compose-stack.yml")
+  ansible_inventory = abspath("${path.root}/ansible/inventory.yml")
+
 
   extra_files_checksum = join(",", [
     for path in sort(keys(var.extra_files)) :
@@ -37,7 +39,6 @@ resource "terraform_data" "this" {
     ssh_port                     = var.ssh_port
     ssh_private_key_path         = local.ssh_private_key_path
     ssh_strict_host_key_checking = var.ssh_strict_host_key_checking
-    destroy_playbook             = local.destroy_playbook
     deploy_spec_b64              = local.deploy_spec_b64
   }
 
@@ -49,10 +50,11 @@ resource "terraform_data" "this" {
     sha256(jsonencode(var.external_networks)),
     sha256(var.env_file == null ? "" : var.env_file),
     sha256(local.extra_files_checksum),
+
   ]
 
   provisioner "local-exec" {
-    command = "ansible-playbook -i '${var.ssh_host},' -u '${var.ssh_user}' --private-key '${local.ssh_private_key_path}' -e 'ansible_port=${var.ssh_port}' '${local.deploy_playbook}'"
+    command = "ansible-playbook -i '${var.ssh_host},' -i '${local.ansible_inventory}' -u '${var.ssh_user}' --private-key '${local.ssh_private_key_path}' -e 'ansible_port=${var.ssh_port}' '${local.deploy_playbook}'"
 
     environment = {
       ANSIBLE_HOST_KEY_CHECKING = var.ssh_strict_host_key_checking ? "True" : "False"
@@ -63,7 +65,7 @@ resource "terraform_data" "this" {
 
   provisioner "local-exec" {
     when    = destroy
-    command = "ansible-playbook -i '${self.input.ssh_host},' -u '${self.input.ssh_user}' --private-key '${self.input.ssh_private_key_path}' -e 'ansible_port=${self.input.ssh_port}' '${self.input.destroy_playbook}'"
+    command = "ansible-playbook -i '${self.input.ssh_host},' -i \"$PWD/ansible/inventory.yml\" -u '${self.input.ssh_user}' --private-key '${self.input.ssh_private_key_path}' -e 'ansible_port=${self.input.ssh_port}' \"$PWD/ansible/destroy-compose-stack.yml\""
 
     environment = {
       ANSIBLE_HOST_KEY_CHECKING = self.input.ssh_strict_host_key_checking ? "True" : "False"

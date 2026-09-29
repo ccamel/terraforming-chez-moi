@@ -1,0 +1,22 @@
+services:
+  cloudflared:
+    image: ${cloudflared_image}
+    container_name: cloudflared
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - $${TUNNEL_TOKEN}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - edge_net
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: edge

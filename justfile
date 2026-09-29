@@ -29,7 +29,7 @@ apply:
 # Destroy infrastructure
 destroy:
     @just ensure-ansible
-    @terraform destroy --input=false
+    @terraform destroy --input=false -parallelism=1
 
 # Format Terraform code
 fmt:

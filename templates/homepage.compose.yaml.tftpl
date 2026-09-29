@@ -24,8 +24,6 @@ services:
       - homepage.icon=homepage.png
       - homepage.href=${homepage_url}
       - homepage.description=Application dashboard
-    ports:
-      - "$${HOMEPAGE_PUBLISHED_PORT}:3000"
     volumes:
       - ./config:/app/config
     environment:

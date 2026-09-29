@@ -28,7 +28,6 @@ module "bobine" {
     },
   ]
   env_file = templatefile("${path.module}/templates/bobine.env.tftpl", {
-    bobine_published_port          = var.bobine_published_port
     bobine_ed25519_private_key_hex = var.bobine_ed25519_private_key_hex
     bobine_ed25519_public_key_hex  = var.bobine_ed25519_public_key_hex
   })

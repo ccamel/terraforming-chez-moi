@@ -4,11 +4,6 @@ variable "zwave_js_ui_image" {
   default     = "zwavejs/zwave-js-ui:latest"
 }
 
-variable "zwave_js_ui_published_port" {
-  description = "Published port on the Synology host for the Z-Wave JS UI web interface"
-  type        = number
-  default     = 8091
-}
 
 variable "zwave_js_ui_ws_published_port" {
   description = "Published port on the Synology host for the Z-Wave JS WebSocket server"

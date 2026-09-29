@@ -28,8 +28,7 @@ module "dockge" {
     },
   ]
   env_file = templatefile("${path.module}/templates/dockge.env.tftpl", {
-    dockge_published_port = var.dockge_published_port
-    dockge_stacks_dir     = dirname(dirname(synology_filestation_folder.dockge_data.real_path))
+    dockge_stacks_dir = dirname(dirname(synology_filestation_folder.dockge_data.real_path))
   })
 
   depends_on = [

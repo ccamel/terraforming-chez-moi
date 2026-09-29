@@ -23,7 +23,6 @@ module "zwave_js_ui" {
     zwave_js_ui_url   = var.zwave_js_ui_url
   })
   env_file = templatefile("${path.module}/templates/zwave-js-ui.env.tftpl", {
-    zwave_js_ui_published_port    = var.zwave_js_ui_published_port
     zwave_js_ui_ws_published_port = var.zwave_js_ui_ws_published_port
     zwave_js_ui_usb_device        = var.zwave_js_ui_usb_device
   })

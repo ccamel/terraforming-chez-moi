@@ -50,6 +50,10 @@ This repository manages **12 self-hosted services** on my Synology NAS.
 
 This repository implements a simple GitOps approach for managing my home infrastructure: desired state is defined in [Terraform](https://developer.hashicorp.com/terraform), versioned in Git, and applied through automated workflows.
 
+## Cloudflare Tunnel
+
+A Cloudflare Tunnel connector is deployed as a Compose stack. Public routes and access policies are configured outside this repository.
+
 ## Usage
 
 This project uses [`just`](https://github.com/casey/just) as a command runner.

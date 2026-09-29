@@ -8,8 +8,6 @@ services:
       - homepage.icon=dockge.png
       - homepage.href=${dockge_url}
       - homepage.description=Compose stack manager
-    ports:
-      - "$${DOCKGE_PUBLISHED_PORT}:5001"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data:/app/data

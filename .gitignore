@@ -9,3 +9,4 @@ terraform.tfstate.backup
 .tfsecrets/
 __pycache__/
 *.py[cod]
+terraform.tfstate.*.backup

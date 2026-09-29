@@ -1,8 +1,3 @@
-variable "n8n_published_port" {
-  description = "Published port on the Synology host for n8n web UI"
-  type        = number
-  default     = 5678
-}
 
 variable "n8n_host" {
   description = "Host/IP that n8n should bind to (passed to the container as N8N_HOST)"
