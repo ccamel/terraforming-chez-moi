@@ -9,9 +9,10 @@ mask_version    := 'latest'
 default:
     @just --list
 
-# Initialize Terraform
+# Initialize Terraform backend
 init:
-    @terraform init
+    @just terraform-init
+
 
 # Validate Terraform configuration
 validate:
@@ -20,6 +21,7 @@ validate:
 # Plan infrastructure changes
 plan:
     @just mask-stream terraform plan --input=false
+
 
 # Apply infrastructure changes
 apply:
@@ -57,6 +59,36 @@ mask-stream cmd *args: ensure-mask
     done < <(env | grep '^TF_VAR_' || true)
 
     bash -c "{{cmd}} {{args}}" 2>&1 | HOME="$PWD/$work" ./.bin/mask
+
+[private]
+terraform-init:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    : "${TF_BACKEND_R2_ENDPOINT:?TF_BACKEND_R2_ENDPOINT is required}"
+    : "${TF_BACKEND_R2_BUCKET:?TF_BACKEND_R2_BUCKET is required}"
+    : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID is required}"
+    : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY is required}"
+    backend_endpoint="${TF_BACKEND_R2_ENDPOINT%/}"
+    backend_endpoint="${backend_endpoint%/$TF_BACKEND_R2_BUCKET}"
+
+    backend_config="$(mktemp)"
+    trap 'rm -f "$backend_config"' EXIT
+    cat > "$backend_config" <<EOF
+    bucket = "$TF_BACKEND_R2_BUCKET"
+    key = "terraform.tfstate"
+    region = "auto"
+    endpoints = { s3 = "$backend_endpoint" }
+    use_lockfile = true
+    use_path_style = true
+    skip_credentials_validation = true
+    skip_metadata_api_check = true
+    skip_region_validation = true
+    skip_requesting_account_id = true
+    skip_s3_checksum = true
+    EOF
+
+    terraform init -input=false -backend-config="$backend_config"
 
 [private]
 ensure-mask:
