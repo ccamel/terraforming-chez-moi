@@ -17,13 +17,14 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **12 self-hosted services** on my Synology NAS.
+This repository manages **13 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
 | Project          | Service          | Image Repo                              | Image                                                |
 | ---------------- | ---------------- | --------------------------------------- | ---------------------------------------------------- |
 | `bobine`         | `bobine`         | `denoland/deno`                         | `denoland/deno:debian-2.6.3`                         |
+| `cloudflared`    | `cloudflared`    | `cloudflare/cloudflared`                | `cloudflare/cloudflared:latest`                      |
 | `dockge`         | `dockge`         | `louislam/dockge`                       | `louislam/dockge:1`                                  |
 | `home-assistant` | `home-assistant` | `ghcr.io/home-assistant/home-assistant` | `ghcr.io/home-assistant/home-assistant:stable`       |
 | `homepage`       | `dockerproxy`    | `ghcr.io/tecnativa/docker-socket-proxy` | `ghcr.io/tecnativa/docker-socket-proxy:v0.4.2`       |
@@ -41,7 +42,7 @@ This repository manages **12 self-hosted services** on my Synology NAS.
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `deno`, `docker-socket-proxy`, `dockge`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `uptime-kuma`, `zeroclaw-runtime`, `zwave-js-ui`.
+- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `uptime-kuma`, `zeroclaw-runtime`, `zwave-js-ui`.
 - Shared runtime networks: `docker_net`, `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -70,7 +71,7 @@ Available recipes:
     default   # Default recipe
     destroy   # Destroy infrastructure
     fmt       # Format Terraform code
-    init      # Initialize Terraform
+    init      # Initialize Terraform backend
     plan      # Plan infrastructure changes
     tools     # Ensure required tools are available for recipes in this Justfile.
     validate  # Validate Terraform configuration
@@ -118,6 +119,7 @@ These are the image build contexts currently present in the repo:
 | Name                                                                          | Source                  | Version |
 | ----------------------------------------------------------------------------- | ----------------------- | ------- |
 | <a name="module_bobine"></a> [bobine](#module_bobine)                         | ./modules/compose_stack | n/a     |
+| <a name="module_cloudflared"></a> [cloudflared](#module_cloudflared)          | ./modules/compose_stack | n/a     |
 | <a name="module_dockge"></a> [dockge](#module_dockge)                         | ./modules/compose_stack | n/a     |
 | <a name="module_home_assistant"></a> [home_assistant](#module_home_assistant) | ./modules/compose_stack | n/a     |
 | <a name="module_homepage"></a> [homepage](#module_homepage)                   | ./modules/compose_stack | n/a     |
@@ -133,6 +135,7 @@ These are the image build contexts currently present in the repo:
 | Name                                                                                                                                                              | Type     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | [synology_filestation_folder.bobine_local](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)          | resource |
+| [synology_filestation_folder.cloudflared](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)           | resource |
 | [synology_filestation_folder.dockge_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)           | resource |
 | [synology_filestation_folder.home_assistant_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.homepage_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
@@ -145,18 +148,17 @@ These are the image build contexts currently present in the repo:
 
 | Name                                                                                                                                       | Description                                                                        | Type     | Default                                                | Required |
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | -------- | ------------------------------------------------------ | :------: |
-| <a name="input_adminer_published_port"></a> [adminer_published_port](#input_adminer_published_port)                                        | Published port on the Synology host for Adminer web UI                             | `number` | `8081`                                                 |    no    |
 | <a name="input_adminer_url"></a> [adminer_url](#input_adminer_url)                                                                         | Browser-visible URL for Adminer, without a trailing slash                          | `string` | n/a                                                    |   yes    |
 | <a name="input_bobine_ed25519_private_key_hex"></a> [bobine_ed25519_private_key_hex](#input_bobine_ed25519_private_key_hex)                | Ed25519 private key hex for bobine                                                 | `string` | n/a                                                    |   yes    |
 | <a name="input_bobine_ed25519_public_key_hex"></a> [bobine_ed25519_public_key_hex](#input_bobine_ed25519_public_key_hex)                   | Ed25519 public key hex for bobine                                                  | `string` | n/a                                                    |   yes    |
-| <a name="input_bobine_published_port"></a> [bobine_published_port](#input_bobine_published_port)                                           | Published port on the Synology host for bobine                                     | `number` | `8082`                                                 |    no    |
 | <a name="input_bobine_url"></a> [bobine_url](#input_bobine_url)                                                                            | Browser-visible URL for bobine, without a trailing slash                           | `string` | n/a                                                    |   yes    |
+| <a name="input_cloudflared_image"></a> [cloudflared_image](#input_cloudflared_image)                                                       | Cloudflare Tunnel connector image                                                  | `string` | `"cloudflare/cloudflared:latest"`                      |    no    |
+| <a name="input_cloudflared_tunnel_token"></a> [cloudflared_tunnel_token](#input_cloudflared_tunnel_token)                                  | Token for the remotely managed Cloudflare Tunnel                                   | `string` | n/a                                                    |   yes    |
 | <a name="input_deploy_ssh_host"></a> [deploy_ssh_host](#input_deploy_ssh_host)                                                             | SSH host used by Ansible to apply rendered Compose stacks on the Synology NAS      | `string` | `null`                                                 |    no    |
 | <a name="input_deploy_ssh_port"></a> [deploy_ssh_port](#input_deploy_ssh_port)                                                             | SSH port used by Ansible to apply rendered Compose stacks on the Synology NAS      | `number` | `22`                                                   |    no    |
 | <a name="input_deploy_ssh_private_key_path"></a> [deploy_ssh_private_key_path](#input_deploy_ssh_private_key_path)                         | Path to the SSH private key used by Ansible to reach the Synology NAS              | `string` | n/a                                                    |   yes    |
 | <a name="input_deploy_ssh_strict_host_key_checking"></a> [deploy_ssh_strict_host_key_checking](#input_deploy_ssh_strict_host_key_checking) | Whether Ansible should enforce SSH host key checking when deploying Compose stacks | `bool`   | `false`                                                |    no    |
 | <a name="input_deploy_ssh_user"></a> [deploy_ssh_user](#input_deploy_ssh_user)                                                             | SSH user used by Ansible to apply rendered Compose stacks on the Synology NAS      | `string` | `null`                                                 |    no    |
-| <a name="input_dockge_published_port"></a> [dockge_published_port](#input_dockge_published_port)                                           | Published port on the Synology host for Dockge                                     | `number` | `8083`                                                 |    no    |
 | <a name="input_dockge_url"></a> [dockge_url](#input_dockge_url)                                                                            | Browser-visible URL for Dockge, without a trailing slash                           | `string` | n/a                                                    |   yes    |
 | <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                                                                  | The hostname of my Synology DSM instance                                           | `string` | n/a                                                    |   yes    |
 | <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                                                                      | DSM password                                                                       | `string` | n/a                                                    |   yes    |
@@ -167,26 +169,22 @@ These are the image build contexts currently present in the repo:
 | <a name="input_homepage_allowed_hosts"></a> [homepage_allowed_hosts](#input_homepage_allowed_hosts)                                        | Comma-separated hostnames and host:port values allowed by Homepage                 | `string` | n/a                                                    |   yes    |
 | <a name="input_homepage_docker_socket_proxy_image"></a> [homepage_docker_socket_proxy_image](#input_homepage_docker_socket_proxy_image)    | Docker socket proxy image used by Homepage                                         | `string` | `"ghcr.io/tecnativa/docker-socket-proxy:v0.4.2"`       |    no    |
 | <a name="input_homepage_image"></a> [homepage_image](#input_homepage_image)                                                                | Homepage Docker image                                                              | `string` | `"ghcr.io/gethomepage/homepage:v1.12.2"`               |    no    |
-| <a name="input_homepage_published_port"></a> [homepage_published_port](#input_homepage_published_port)                                     | Published port on the Synology host for Homepage                                   | `number` | `8085`                                                 |    no    |
 | <a name="input_homepage_url"></a> [homepage_url](#input_homepage_url)                                                                      | Browser-visible URL for Homepage, without a trailing slash                         | `string` | n/a                                                    |   yes    |
 | <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)                                                    | Encryption key for n8n sensitive data                                              | `string` | `"my-32-character-random-string"`                      |    no    |
 | <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                                                                  | Host/IP that n8n should bind to (passed to the container as N8N_HOST)              | `string` | `"0.0.0.0"`                                            |    no    |
 | <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                                                             | PostgreSQL database name for n8n                                                   | `string` | `"n8n-db-name"`                                        |    no    |
 | <a name="input_n8n_postgres_password"></a> [n8n_postgres_password](#input_n8n_postgres_password)                                           | PostgreSQL password for n8n                                                        | `string` | `"n8n-db-password"`                                    |    no    |
 | <a name="input_n8n_postgres_user"></a> [n8n_postgres_user](#input_n8n_postgres_user)                                                       | PostgreSQL username for n8n                                                        | `string` | `"n8n-db-user"`                                        |    no    |
-| <a name="input_n8n_published_port"></a> [n8n_published_port](#input_n8n_published_port)                                                    | Published port on the Synology host for n8n web UI                                 | `number` | `5678`                                                 |    no    |
 | <a name="input_n8n_url"></a> [n8n_url](#input_n8n_url)                                                                                     | Browser-visible URL for n8n, without a trailing slash                              | `string` | n/a                                                    |   yes    |
 | <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                                                             | Public URL for n8n webhooks                                                        | `string` | `"localhost:5678"`                                     |    no    |
 | <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                                       | Password for the PostgreSQL service                                                | `string` | `"postgres-password"`                                  |    no    |
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                                   | Username for the PostgreSQL service                                                | `string` | `"postgres-user"`                                      |    no    |
 | <a name="input_uptime_kuma_image"></a> [uptime_kuma_image](#input_uptime_kuma_image)                                                       | Uptime Kuma Docker image                                                           | `string` | `"louislam/uptime-kuma:2"`                             |    no    |
-| <a name="input_uptime_kuma_published_port"></a> [uptime_kuma_published_port](#input_uptime_kuma_published_port)                            | Published port on the Synology host for Uptime Kuma                                | `number` | `8084`                                                 |    no    |
 | <a name="input_uptime_kuma_url"></a> [uptime_kuma_url](#input_uptime_kuma_url)                                                             | Browser-visible URL for Uptime Kuma, without a trailing slash                      | `string` | n/a                                                    |   yes    |
 | <a name="input_zeroclaw_cyrus_url"></a> [zeroclaw_cyrus_url](#input_zeroclaw_cyrus_url)                                                    | Browser-visible URL for ZeroClaw Cyrus, without a trailing slash                   | `string` | n/a                                                    |   yes    |
 | <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.8.4-ubuntu24.04"` |    no    |
 | <a name="input_zeroclaw_lior_url"></a> [zeroclaw_lior_url](#input_zeroclaw_lior_url)                                                       | Browser-visible URL for ZeroClaw Lior, without a trailing slash                    | `string` | n/a                                                    |   yes    |
 | <a name="input_zwave_js_ui_image"></a> [zwave_js_ui_image](#input_zwave_js_ui_image)                                                       | Z-Wave JS UI image                                                                 | `string` | `"zwavejs/zwave-js-ui:latest"`                         |    no    |
-| <a name="input_zwave_js_ui_published_port"></a> [zwave_js_ui_published_port](#input_zwave_js_ui_published_port)                            | Published port on the Synology host for the Z-Wave JS UI web interface             | `number` | `8091`                                                 |    no    |
 | <a name="input_zwave_js_ui_url"></a> [zwave_js_ui_url](#input_zwave_js_ui_url)                                                             | Browser-visible URL for Z-Wave JS UI, without a trailing slash                     | `string` | n/a                                                    |   yes    |
 | <a name="input_zwave_js_ui_usb_device"></a> [zwave_js_ui_usb_device](#input_zwave_js_ui_usb_device)                                        | Z-Wave USB device path exposed to the Z-Wave JS UI container                       | `string` | `"/dev/ttyUSB0"`                                       |    no    |
 | <a name="input_zwave_js_ui_ws_published_port"></a> [zwave_js_ui_ws_published_port](#input_zwave_js_ui_ws_published_port)                   | Published port on the Synology host for the Z-Wave JS WebSocket server             | `number` | `3000`                                                 |    no    |
