@@ -17,7 +17,7 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **13 self-hosted services** on my Synology NAS.
+This repository manages **14 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
@@ -32,6 +32,7 @@ This repository manages **13 self-hosted services** on my Synology NAS.
 | `infra-db`       | `adminer`        | `adminer`                               | `adminer:5.3.0`                                      |
 | `infra-db`       | `postgres`       | `bitnamilegacy/postgresql`              | `bitnamilegacy/postgresql:17.5.0`                    |
 | `n8n`            | `n8n`            | `n8nio/n8n`                             | `n8nio/n8n:2.1.5-amd64`                              |
+| `transmission`   | `transmission`   | `lscr.io/linuxserver/transmission`      | `lscr.io/linuxserver/transmission:4.0.6-r0-ls248`    |
 | `uptime-kuma`    | `uptime-kuma`    | `louislam/uptime-kuma`                  | `louislam/uptime-kuma:2`                             |
 | `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04` |
 | `zeroclaw-lior`  | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04` |
@@ -42,7 +43,7 @@ This repository manages **13 self-hosted services** on my Synology NAS.
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `uptime-kuma`, `zeroclaw-runtime`, `zwave-js-ui`.
+- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `transmission`, `uptime-kuma`, `zeroclaw-runtime`, `zwave-js-ui`.
 - Shared runtime networks: `docker_net`, `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -126,6 +127,7 @@ These are the image build contexts currently present in the repo:
 | <a name="module_homepage"></a> [homepage](#module_homepage)                   | ./modules/compose_stack | n/a     |
 | <a name="module_infra_db"></a> [infra_db](#module_infra_db)                   | ./modules/compose_stack | n/a     |
 | <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a     |
+| <a name="module_transmission"></a> [transmission](#module_transmission)       | ./modules/compose_stack | n/a     |
 | <a name="module_uptime_kuma"></a> [uptime_kuma](#module_uptime_kuma)          | ./modules/compose_stack | n/a     |
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
 | <a name="module_zeroclaw_lior"></a> [zeroclaw_lior](#module_zeroclaw_lior)    | ./modules/zeroclaw      | n/a     |
@@ -142,6 +144,7 @@ These are the image build contexts currently present in the repo:
 | [synology_filestation_folder.homepage_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)              | resource |
+| [synology_filestation_folder.transmission_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)   | resource |
 | [synology_filestation_folder.uptime_kuma_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)      | resource |
 | [synology_filestation_folder.zwave_js_ui_store](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)     | resource |
 
@@ -180,6 +183,10 @@ These are the image build contexts currently present in the repo:
 | <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                                                             | Public URL for n8n webhooks                                                        | `string` | `"localhost:5678"`                                     |    no    |
 | <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                                       | Password for the PostgreSQL service                                                | `string` | `"postgres-password"`                                  |    no    |
 | <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                                   | Username for the PostgreSQL service                                                | `string` | `"postgres-user"`                                      |    no    |
+| <a name="input_transmission_downloads_path"></a> [transmission_downloads_path](#input_transmission_downloads_path)                         | Path used for Transmission downloads                                               | `string` | n/a                                                    |   yes    |
+| <a name="input_transmission_image"></a> [transmission_image](#input_transmission_image)                                                    | Transmission Docker image                                                          | `string` | `"lscr.io/linuxserver/transmission:4.0.6-r0-ls248"`    |    no    |
+| <a name="input_transmission_password"></a> [transmission_password](#input_transmission_password)                                           | Password required by the Transmission RPC interface                                | `string` | n/a                                                    |   yes    |
+| <a name="input_transmission_username"></a> [transmission_username](#input_transmission_username)                                           | Username required by the Transmission RPC interface                                | `string` | n/a                                                    |   yes    |
 | <a name="input_uptime_kuma_image"></a> [uptime_kuma_image](#input_uptime_kuma_image)                                                       | Uptime Kuma Docker image                                                           | `string` | `"louislam/uptime-kuma:2"`                             |    no    |
 | <a name="input_uptime_kuma_url"></a> [uptime_kuma_url](#input_uptime_kuma_url)                                                             | Browser-visible URL for Uptime Kuma, without a trailing slash                      | `string` | n/a                                                    |   yes    |
 | <a name="input_zeroclaw_cyrus_url"></a> [zeroclaw_cyrus_url](#input_zeroclaw_cyrus_url)                                                    | Browser-visible URL for ZeroClaw Cyrus, without a trailing slash                   | `string` | n/a                                                    |   yes    |
