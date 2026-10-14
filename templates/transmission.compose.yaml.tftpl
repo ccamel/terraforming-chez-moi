@@ -1,0 +1,23 @@
+services:
+  transmission:
+    image: ${transmission_image}
+    container_name: transmission
+    volumes:
+      - ./config:/config
+      - ${transmission_downloads_path}:/downloads
+    environment:
+      PUID: "1028"
+      PGID: "100"
+      TZ: Europe/Paris
+      USER: $${TRANSMISSION_USERNAME}
+      PASS: $${TRANSMISSION_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - edge_net
+    logging:
+      driver: json-file
+
+networks:
+  edge_net:
+    external: true
+    name: edge

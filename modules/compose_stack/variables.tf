@@ -57,6 +57,7 @@ variable "external_networks" {
   nullable = false
 }
 
+
 variable "env_file" {
   description = "Rendered .env content for the stack"
   type        = string
