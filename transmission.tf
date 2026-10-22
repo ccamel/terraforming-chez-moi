@@ -20,6 +20,7 @@ module "transmission" {
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
   compose_yaml = templatefile("${path.module}/templates/transmission.compose.yaml.tftpl", {
     transmission_image          = var.transmission_image
+    transmission_vpn_image      = var.transmission_vpn_image
     transmission_downloads_path = var.transmission_downloads_path
   })
   external_networks = [
@@ -29,8 +30,10 @@ module "transmission" {
     },
   ]
   env_file = templatefile("${path.module}/templates/transmission.env.tftpl", {
-    transmission_username = var.transmission_username
-    transmission_password = var.transmission_password
+    transmission_username              = var.transmission_username
+    transmission_password              = var.transmission_password
+    transmission_vpn_service_provider  = var.transmission_vpn_service_provider
+    transmission_wireguard_private_key = var.transmission_wireguard_private_key
   })
 
   depends_on = [

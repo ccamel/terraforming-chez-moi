@@ -1,4 +1,24 @@
 services:
+  gluetun:
+    image: ${transmission_vpn_image}
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      VPN_SERVICE_PROVIDER: $${TRANSMISSION_VPN_SERVICE_PROVIDER}
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: $${TRANSMISSION_WIREGUARD_PRIVATE_KEY}
+      FIREWALL_INPUT_PORTS: "9091"
+    restart: unless-stopped
+    networks:
+      edge_net:
+        aliases:
+          - transmission
+    logging:
+      driver: json-file
+
   transmission:
     image: ${transmission_image}
     container_name: transmission
@@ -11,9 +31,11 @@ services:
       TZ: Europe/Paris
       USER: $${TRANSMISSION_USERNAME}
       PASS: $${TRANSMISSION_PASSWORD}
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
     restart: unless-stopped
-    networks:
-      - edge_net
     logging:
       driver: json-file
 
