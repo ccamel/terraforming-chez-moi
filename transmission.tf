@@ -35,6 +35,12 @@ module "transmission" {
     transmission_vpn_service_provider  = var.transmission_vpn_service_provider
     transmission_wireguard_private_key = var.transmission_wireguard_private_key
   })
+  extra_files = {
+    "update-transmission-port.sh" = {
+      content = templatefile("${path.module}/templates/transmission.update-port.sh.tftpl", {})
+      mode    = "0755"
+    }
+  }
 
   depends_on = [
     synology_filestation_folder.transmission_config,

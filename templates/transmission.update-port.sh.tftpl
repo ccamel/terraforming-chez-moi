@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+port="$1"
+rpc_url=http://127.0.0.1:9091/transmission/rpc
+payload="{\"method\":\"session-set\",\"arguments\":{\"peer-port\":$port}}"
+session_id=
+attempt=0
+while [ -z "$session_id" ] && [ "$attempt" -lt 30 ]; do
+  session_id="$(
+    wget --server-response --output-document=/dev/null \
+      --user="$TRANSMISSION_USERNAME" \
+      --password="$TRANSMISSION_PASSWORD" \
+      --header='Content-Type: application/json' \
+      --post-data="$payload" \
+      "$rpc_url" 2>&1 |
+      sed -n 's/^[[:space:]]*X-Transmission-Session-Id: //p' |
+      tr -d '\r'
+  )"
+  attempt=$((attempt + 1))
+  [ -n "$session_id" ] || sleep 2
+done
+
+test -n "$session_id"
+wget --quiet --output-document=/dev/null \
+  --user="$TRANSMISSION_USERNAME" \
+  --password="$TRANSMISSION_PASSWORD" \
+  --header='Content-Type: application/json' \
+  --header="X-Transmission-Session-Id: $session_id" \
+  --post-data="$payload" \
+  "$rpc_url"

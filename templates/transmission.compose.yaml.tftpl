@@ -11,7 +11,13 @@ services:
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: $${TRANSMISSION_WIREGUARD_PRIVATE_KEY}
       FIREWALL_INPUT_PORTS: "9091"
-    restart: unless-stopped
+      VPN_PORT_FORWARDING: "on"
+      VPN_PORT_FORWARDING_PROVIDER: $${TRANSMISSION_VPN_SERVICE_PROVIDER}
+      VPN_PORT_FORWARDING_UP_COMMAND: "/bin/sh /gluetun/update-transmission-port.sh {{PORT}}"
+      TRANSMISSION_USERNAME: $${TRANSMISSION_USERNAME}
+      TRANSMISSION_PASSWORD: $${TRANSMISSION_PASSWORD}
+    volumes:
+      - ./update-transmission-port.sh:/gluetun/update-transmission-port.sh:ro
     networks:
       edge_net:
         aliases:
