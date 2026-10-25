@@ -34,6 +34,9 @@ module "transmission" {
     transmission_password              = var.transmission_password
     transmission_vpn_service_provider  = var.transmission_vpn_service_provider
     transmission_wireguard_private_key = var.transmission_wireguard_private_key
+    transmission_mail_address          = var.transmission_mail_address
+    transmission_mail_password         = var.transmission_mail_password
+    transmission_notification_to       = var.transmission_notification_to
   })
   extra_files = {
     "update-transmission-port.sh" = {

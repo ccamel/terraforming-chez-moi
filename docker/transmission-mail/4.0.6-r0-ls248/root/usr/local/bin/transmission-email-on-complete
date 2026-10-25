@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+{
+  printf 'From: %s\n' "$TRANSMISSION_MAIL_ADDRESS"
+  printf 'To: %s\n' "$TRANSMISSION_NOTIFICATION_TO"
+  printf 'Subject: Transmission download completed\n'
+  printf '\nTorrent: %s\n' "$TR_TORRENT_NAME"
+  printf 'Directory: %s\n' "$TR_TORRENT_DIR"
+} | msmtp \
+  --host=smtp.gmail.com \
+  --port=587 \
+  --tls=on \
+  --tls-starttls=on \
+  --auth=on \
+  --user="$TRANSMISSION_MAIL_ADDRESS" \
+  --passwordeval='printf %s "$TRANSMISSION_MAIL_PASSWORD"' \
+  --from="$TRANSMISSION_MAIL_ADDRESS" \
+  --set-from-header=off \
+  "$TRANSMISSION_NOTIFICATION_TO"

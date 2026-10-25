@@ -4,9 +4,9 @@ variable "transmission_downloads_path" {
 }
 
 variable "transmission_image" {
-  description = "Transmission Docker image"
+  description = "Transmission image with the SMTP completion-notification hook"
   type        = string
-  default     = "lscr.io/linuxserver/transmission:4.0.6-r0-ls248"
+  default     = "ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248"
 }
 
 variable "transmission_vpn_image" {
@@ -42,4 +42,22 @@ variable "transmission_wireguard_private_key" {
     condition     = can(regex("^[A-Za-z0-9+/]{43}=$", var.transmission_wireguard_private_key))
     error_message = "transmission_wireguard_private_key must be a base64 WireGuard private key."
   }
+}
+
+variable "transmission_mail_address" {
+  description = "Sender address for Transmission completion notifications"
+  type        = string
+  sensitive   = true
+}
+
+variable "transmission_mail_password" {
+  description = "Mail credential for Transmission completion notifications"
+  type        = string
+  sensitive   = true
+}
+
+variable "transmission_notification_to" {
+  description = "Recipient address for Transmission completion notifications"
+  type        = string
+  sensitive   = true
 }
