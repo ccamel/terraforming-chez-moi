@@ -2,6 +2,7 @@ services:
   gluetun:
     image: ${transmission_vpn_image}
     container_name: gluetun
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     devices:
