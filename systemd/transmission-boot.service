@@ -1,0 +1,16 @@
+[Unit]
+Description=Prepare TUN and start Transmission VPN stack
+After=network-online.target pkg-ContainerManager-dockerd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+StartLimitInterval=0
+ExecStart=/bin/sh /usr/local/sbin/transmission-start-on-boot.sh
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

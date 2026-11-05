@@ -1,31 +1,38 @@
 #!/bin/sh
-set -eu
+set -u
 
-port="$1"
-rpc_url=http://127.0.0.1:9091/transmission/rpc
-payload="{\"method\":\"session-set\",\"arguments\":{\"peer-port\":$port}}"
-session_id=
-attempt=0
-while [ -z "$session_id" ] && [ "$attempt" -lt 30 ]; do
-  session_id="$(
-    wget --server-response --output-document=/dev/null \
-      --user="$TRANSMISSION_USERNAME" \
-      --password="$TRANSMISSION_PASSWORD" \
-      --header='Content-Type: application/json' \
-      --post-data="$payload" \
-      "$rpc_url" 2>&1 |
-      sed -n 's/^[[:space:]]*X-Transmission-Session-Id: //p' |
-      tr -d '\r'
-  )"
-  attempt=$((attempt + 1))
-  [ -n "$session_id" ] || sleep 2
+port_file="$1"
+rpc_url="$2"
+
+while :; do
+  port=$(cat "$port_file" 2>/dev/null || :)
+  case "$port" in
+    ''|*[!0-9]*) sleep 5; continue ;;
+  esac
+  if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+    sleep 5
+    continue
+  fi
+
+  session_id=$(curl -sS --max-time 5 --user "$TRANSMISSION_USERNAME:$TRANSMISSION_PASSWORD" \
+    --header 'Content-Type: application/json' --data '{"method":"session-get"}' \
+    --dump-header - --output /dev/null "$rpc_url" 2>/dev/null |
+    sed -n 's/^[Xx]-[Tt]ransmission-[Ss]ession-[Ii]d: //p' | tr -d '\r')
+  if [ -n "$session_id" ]; then
+    response=$(curl -fsS --max-time 5 --user "$TRANSMISSION_USERNAME:$TRANSMISSION_PASSWORD" \
+      --header 'Content-Type: application/json' --header "X-Transmission-Session-Id: $session_id" \
+      --data '{"method":"session-get"}' "$rpc_url" 2>/dev/null || :)
+    current_port=$(printf '%s' "$response" | jq -er 'select(.result == "success") | .arguments["peer-port"]' 2>/dev/null || :)
+    if [ -n "$current_port" ] && [ "$current_port" != "$port" ]; then
+      response=$(curl -fsS --max-time 5 --user "$TRANSMISSION_USERNAME:$TRANSMISSION_PASSWORD" \
+        --header 'Content-Type: application/json' --header "X-Transmission-Session-Id: $session_id" \
+        --data "{\"method\":\"session-set\",\"arguments\":{\"peer-port\":$port}}" "$rpc_url" 2>/dev/null || :)
+      if printf '%s' "$response" | jq -e '.result == "success"' >/dev/null 2>&1; then
+        echo "Transmission peer port updated to $port"
+      else
+        echo "Failed to update Transmission peer port" >&2
+      fi
+    fi
+  fi
+  sleep 30
 done
-
-test -n "$session_id"
-wget --quiet --output-document=/dev/null \
-  --user="$TRANSMISSION_USERNAME" \
-  --password="$TRANSMISSION_PASSWORD" \
-  --header='Content-Type: application/json' \
-  --header="X-Transmission-Session-Id: $session_id" \
-  --post-data="$payload" \
-  "$rpc_url"

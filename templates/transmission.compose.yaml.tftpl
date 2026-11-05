@@ -14,11 +14,9 @@ services:
       FIREWALL_INPUT_PORTS: "9091"
       VPN_PORT_FORWARDING: "on"
       VPN_PORT_FORWARDING_PROVIDER: $${TRANSMISSION_VPN_SERVICE_PROVIDER}
-      VPN_PORT_FORWARDING_UP_COMMAND: "/bin/sh /gluetun/update-transmission-port.sh {{PORT}}"
-      TRANSMISSION_USERNAME: $${TRANSMISSION_USERNAME}
-      TRANSMISSION_PASSWORD: $${TRANSMISSION_PASSWORD}
+      VPN_PORT_FORWARDING_STATUS_FILE: /port-forward/forwarded_port
     volumes:
-      - ./update-transmission-port.sh:/gluetun/update-transmission-port.sh:ro
+      - ./config:/port-forward
     networks:
       edge_net:
         aliases:
@@ -41,6 +39,23 @@ services:
       TRANSMISSION_MAIL_ADDRESS: $${TRANSMISSION_MAIL_ADDRESS}
       TRANSMISSION_MAIL_PASSWORD: $${TRANSMISSION_MAIL_PASSWORD}
       TRANSMISSION_NOTIFICATION_TO: $${TRANSMISSION_NOTIFICATION_TO}
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: json-file
+
+  port-sync:
+    image: ${transmission_image}
+    entrypoint: ["/bin/sh", "/port-sync.sh", "/port-forward/forwarded_port", "http://127.0.0.1:9091/transmission/rpc"]
+    environment:
+      TRANSMISSION_USERNAME: $${TRANSMISSION_USERNAME}
+      TRANSMISSION_PASSWORD: $${TRANSMISSION_PASSWORD}
+    volumes:
+      - ./config:/port-forward:ro
+      - ./update-transmission-port.sh:/port-sync.sh:ro
     network_mode: service:gluetun
     depends_on:
       gluetun:
