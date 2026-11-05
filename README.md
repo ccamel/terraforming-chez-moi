@@ -17,7 +17,7 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **15 self-hosted services** on my Synology NAS.
+This repository manages **16 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
@@ -33,6 +33,7 @@ This repository manages **15 self-hosted services** on my Synology NAS.
 | `infra-db`       | `postgres`       | `bitnamilegacy/postgresql`              | `bitnamilegacy/postgresql:17.5.0`                                                        |
 | `n8n`            | `n8n`            | `n8nio/n8n`                             | `n8nio/n8n:2.1.5-amd64`                                                                  |
 | `transmission`   | `gluetun`        | `qmcgaw/gluetun`                        | `qmcgaw/gluetun@sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b` |
+| `transmission`   | `port-sync`      | `ghcr.io/ccamel/transmission-mail`      | `ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248`                                        |
 | `transmission`   | `transmission`   | `ghcr.io/ccamel/transmission-mail`      | `ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248`                                        |
 | `uptime-kuma`    | `uptime-kuma`    | `louislam/uptime-kuma`                  | `louislam/uptime-kuma:2`                                                                 |
 | `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04`                                     |
