@@ -41,6 +41,21 @@ fmt:
 check-fmt:
     @terraform fmt -check -recursive
 
+# Edit encrypted deployment variables
+secrets-edit:
+    @sops --input-type dotenv --output-type dotenv .env.sops
+
+# Decrypt deployment variables, replacing .env
+[confirm("Replace .env with the decrypted secrets?")]
+secrets-decrypt:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p .tfsecrets
+    tmp="$(mktemp .tfsecrets/env.XXXXXX)"
+    trap 'rm -f "$tmp"' EXIT
+    sops --decrypt --input-type dotenv --output-type dotenv .env.sops > "$tmp"
+    mv "$tmp" .env
+
 # Ensure required tools are available for recipes in this Justfile.
 tools:
     @just ensure-mask
