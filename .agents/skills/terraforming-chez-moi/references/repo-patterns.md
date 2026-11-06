@@ -12,7 +12,7 @@
 - Env templates: `templates/<project>.env.tftpl`
 - Extra rendered support files: `templates/<project>.*.tftpl`
 - Remote deploy and destroy playbooks: `ansible/deploy-compose-stack.yml`, `ansible/destroy-compose-stack.yml`
-- README generated sections: managed by `.github/workflows/update-docs-readme.yml`, which runs `.github/scripts/render_readme_overview.py` and `.github/scripts/render_readme_docker_images.py`
+- README generated sections: run `just update-readme`, which invokes `.github/scripts/render_readme_overview.py` and `.github/scripts/render_readme_docker_images.py`; `.github/workflows/update-docs-readme.yml` commits updates
 - Docker image contexts: `docker/<image-name>/<image-tag>/Dockerfile`
 
 ## Compose Stack Module Shape

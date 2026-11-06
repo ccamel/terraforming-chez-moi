@@ -56,52 +56,15 @@ jobs:
           . "$DOCS_VENV/bin/activate"
           python3 -m pip install --disable-pip-version-check -r .github/python/requirements.txt
 
-      - name: Generate Terraform docs
-        uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
-        with:
-          output-file: README.md
-          output-method: inject
-          output-format: markdown
-          git-push: 'false'
-
-      # terraform-docs/gh-actions runs as a Docker action and can leave .git
-      # objects owned by root, which breaks the later auto-commit step.
-      - name: Restore Git metadata ownership after terraform-docs
-        run: sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE/.git"
-
-      - name: Generate Just recipes
+      - name: Install terraform-docs
         run: |
-          echo "📝 Generating Just recipes"
+          go install github.com/terraform-docs/terraform-docs@v0.20.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
-          awk '
-          /<!-- BEGIN_JUST_RECIPES -->/ {
-              print
-              print "``` text"
-              system("just -l")
-              print "```"
-              skip = 1
-              next
-          }
-          /<!-- END_JUST_RECIPES -->/ {
-              skip = 0
-          }
-          !skip
-          ' README.md > README.tmp && mv README.tmp README.md
-
-      - name: Generate deployed services overview
+      - name: Update README
         run: |
           . "$DOCS_VENV/bin/activate"
-          python3 .github/scripts/render_readme_overview.py README.md
-
-      - name: Generate built Docker images section
-        run: |
-          . "$DOCS_VENV/bin/activate"
-          python3 .github/scripts/render_readme_docker_images.py README.md
-
-      - name: Prettify README.md
-        run: |
-          echo "📝 Prettifying README.md"
-          npx prettier@3.0.3 README.md --write
+          just update-readme
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@d0b01107b5db882071f96de5dd4b54961ea93f4c # v7

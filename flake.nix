@@ -42,7 +42,12 @@
               pkgs.just
               pkgs.marksman
               pkgs.nil
-              pkgs.python3
+              pkgs.nodejs
+              (pkgs.python3.withPackages (ps: [
+                ps.python-hcl2
+                ps.pyyaml
+                ps.tabulate
+              ]))
               pkgs.python3Packages.pip
               pkgs.python3Packages.virtualenv
               pkgs.pyright
@@ -52,6 +57,7 @@
               pkgs.sops
               pkgs.statix
               pkgs.terraform
+              pkgs.terraform-docs
               pkgs.tflint
               pkgs.terraform-ls
               pkgs.yamllint

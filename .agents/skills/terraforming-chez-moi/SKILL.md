@@ -18,7 +18,7 @@ description: Work on the terraforming-chez-moi repository, a personal Terraform 
 - Keep published host ports in Terraform variables. Mark credentials, keys, users, hostnames, webhook URLs, and app secrets as `sensitive = true`.
 - Add `permfix` only for images that require specific ownership or permissions; make the main service depend on its `service_completed_successfully`.
 - Prefer pinned, reputable production images. Add healthchecks for databases, stateful services, and web services.
-- Do not edit generated README sections for normal changes. `.github/workflows/update-docs-readme.yml` owns them.
+- Do not edit generated README sections manually. Run `just update-readme`; `.github/workflows/update-docs-readme.yml` commits the generated changes.
 
 Read `references/repo-patterns.md` only for exact file map or skeleton snippets.
 

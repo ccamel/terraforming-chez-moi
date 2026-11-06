@@ -41,6 +41,29 @@ fmt:
 check-fmt:
     @terraform fmt -check -recursive
 
+# Update generated README sections
+update-readme:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    terraform-docs markdown --output-file README.md --output-mode inject . | sed 's/^/📝 /'
+    awk '
+    /<!-- BEGIN_JUST_RECIPES -->/ {
+        print
+        print "``` text"
+        system("just -l")
+        print "```"
+        skip = 1
+        next
+    }
+    /<!-- END_JUST_RECIPES -->/ {
+        skip = 0
+    }
+    !skip
+    ' README.md > README.tmp && mv README.tmp README.md
+    python3 .github/scripts/render_readme_overview.py README.md
+    python3 .github/scripts/render_readme_docker_images.py README.md
+    npx prettier@3.0.3 README.md --write | sed 's/^/✨ /'
+
 # Edit encrypted deployment variables
 secrets-edit:
     @sops --input-type dotenv --output-type dotenv .env.sops
