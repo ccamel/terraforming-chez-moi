@@ -17,7 +17,7 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
 
-This repository manages **15 self-hosted services** on my Synology NAS.
+This repository manages **16 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
@@ -31,6 +31,7 @@ This repository manages **15 self-hosted services** on my Synology NAS.
 | `homepage`       | `homepage`       | `ghcr.io/gethomepage/homepage`          | `ghcr.io/gethomepage/homepage:v1.12.2`                                                   |
 | `infra-db`       | `adminer`        | `adminer`                               | `adminer:5.3.0`                                                                          |
 | `infra-db`       | `postgres`       | `bitnamilegacy/postgresql`              | `bitnamilegacy/postgresql:17.5.0`                                                        |
+| `mqtt`           | `mosquitto`      | `eclipse-mosquitto`                     | `eclipse-mosquitto:2.0.22`                                                               |
 | `n8n`            | `n8n`            | `n8nio/n8n`                             | `n8nio/n8n:2.1.5-amd64`                                                                  |
 | `transmission`   | `gluetun`        | `qmcgaw/gluetun`                        | `qmcgaw/gluetun@sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b` |
 | `transmission`   | `port-sync`      | `ghcr.io/ccamel/transmission-mail`      | `ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248`                                        |
@@ -44,7 +45,7 @@ This repository manages **15 self-hosted services** on my Synology NAS.
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `gluetun`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `transmission-mail`, `zeroclaw-runtime`, `zwave-js-ui`.
+- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `eclipse-mosquitto`, `gluetun`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `transmission-mail`, `zeroclaw-runtime`, `zwave-js-ui`.
 - Shared runtime networks: `docker_net`, `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -131,6 +132,7 @@ These are the image build contexts currently present in the repo:
 | <a name="module_home_assistant"></a> [home_assistant](#module_home_assistant) | ./modules/compose_stack | n/a     |
 | <a name="module_homepage"></a> [homepage](#module_homepage)                   | ./modules/compose_stack | n/a     |
 | <a name="module_infra_db"></a> [infra_db](#module_infra_db)                   | ./modules/compose_stack | n/a     |
+| <a name="module_mqtt"></a> [mqtt](#module_mqtt)                               | ./modules/compose_stack | n/a     |
 | <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a     |
 | <a name="module_transmission"></a> [transmission](#module_transmission)       | ./modules/compose_stack | n/a     |
 | <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
@@ -147,6 +149,7 @@ These are the image build contexts currently present in the repo:
 | [synology_filestation_folder.home_assistant_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.homepage_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
 | [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
+| [synology_filestation_folder.mqtt_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)             | resource |
 | [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)              | resource |
 | [synology_filestation_folder.transmission_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)   | resource |
 | [synology_filestation_folder.zwave_js_ui_store](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)     | resource |
@@ -177,6 +180,8 @@ These are the image build contexts currently present in the repo:
 | <a name="input_homepage_docker_socket_proxy_image"></a> [homepage_docker_socket_proxy_image](#input_homepage_docker_socket_proxy_image)    | Docker socket proxy image used by Homepage                                         | `string` | `"ghcr.io/tecnativa/docker-socket-proxy:v0.4.2"`                                           |    no    |
 | <a name="input_homepage_image"></a> [homepage_image](#input_homepage_image)                                                                | Homepage Docker image                                                              | `string` | `"ghcr.io/gethomepage/homepage:v1.12.2"`                                                   |    no    |
 | <a name="input_homepage_url"></a> [homepage_url](#input_homepage_url)                                                                      | Browser-visible URL for Homepage, without a trailing slash                         | `string` | n/a                                                                                        |   yes    |
+| <a name="input_mqtt_homeassistant_password"></a> [mqtt_homeassistant_password](#input_mqtt_homeassistant_password)                         | MQTT password for Home Assistant                                                   | `string` | n/a                                                                                        |   yes    |
+| <a name="input_mqtt_published_port"></a> [mqtt_published_port](#input_mqtt_published_port)                                                 | Published localhost port for the MQTT broker                                       | `number` | `1883`                                                                                     |    no    |
 | <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)                                                    | Encryption key for n8n sensitive data                                              | `string` | `"my-32-character-random-string"`                                                          |    no    |
 | <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                                                                  | Host/IP that n8n should bind to (passed to the container as N8N_HOST)              | `string` | `"0.0.0.0"`                                                                                |    no    |
 | <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                                                             | PostgreSQL database name for n8n                                                   | `string` | `"n8n-db-name"`                                                                            |    no    |
