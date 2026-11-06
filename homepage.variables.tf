@@ -29,12 +29,6 @@ variable "dockge_url" {
   sensitive   = true
 }
 
-variable "uptime_kuma_url" {
-  description = "Browser-visible URL for Uptime Kuma, without a trailing slash"
-  type        = string
-  sensitive   = true
-}
-
 variable "adminer_url" {
   description = "Browser-visible URL for Adminer, without a trailing slash"
   type        = string

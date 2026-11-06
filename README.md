@@ -16,13 +16,12 @@ But if you enjoy turning black-box appliances into programmable interfaces - wel
 ## Overview
 
 <!-- BEGIN_DEPLOYED_OVERVIEW -->
-
-This repository manages **16 self-hosted services** on my Synology NAS.
+This repository manages **15 self-hosted services** on my Synology NAS.
 
 ### Runtime Services
 
 | Project          | Service          | Image Repo                              | Image                                                                                    |
-| ---------------- | ---------------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
+|------------------|------------------|-----------------------------------------|------------------------------------------------------------------------------------------|
 | `bobine`         | `bobine`         | `denoland/deno`                         | `denoland/deno:debian-2.6.3`                                                             |
 | `cloudflared`    | `cloudflared`    | `cloudflare/cloudflared`                | `cloudflare/cloudflared:latest`                                                          |
 | `dockge`         | `dockge`         | `louislam/dockge`                       | `louislam/dockge:1`                                                                      |
@@ -35,7 +34,6 @@ This repository manages **16 self-hosted services** on my Synology NAS.
 | `transmission`   | `gluetun`        | `qmcgaw/gluetun`                        | `qmcgaw/gluetun@sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b` |
 | `transmission`   | `port-sync`      | `ghcr.io/ccamel/transmission-mail`      | `ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248`                                        |
 | `transmission`   | `transmission`   | `ghcr.io/ccamel/transmission-mail`      | `ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248`                                        |
-| `uptime-kuma`    | `uptime-kuma`    | `louislam/uptime-kuma`                  | `louislam/uptime-kuma:2`                                                                 |
 | `zeroclaw-cyrus` | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04`                                     |
 | `zeroclaw-lior`  | `zeroclaw`       | `ghcr.io/ccamel/zeroclaw-runtime`       | `ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04`                                     |
 | `zwave-js-ui`    | `zwave-js-ui`    | `zwavejs/zwave-js-ui`                   | `zwavejs/zwave-js-ui:latest`                                                             |
@@ -45,7 +43,7 @@ This repository manages **16 self-hosted services** on my Synology NAS.
 - Infrastructure state is managed by `Terraform` via `synology-community/synology` (~> 0.4).
 - Runtime is rendered as Docker Compose stacks and applied remotely over SSH via `Ansible`.
 - Synology-specific state is mostly limited to DSM folders provisioned through Terraform.
-- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `gluetun`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `transmission-mail`, `uptime-kuma`, `zeroclaw-runtime`, `zwave-js-ui`.
+- Runtime technologies currently in play: `adminer`, `cloudflared`, `deno`, `docker-socket-proxy`, `dockge`, `gluetun`, `home-assistant`, `homepage`, `n8n`, `postgresql`, `transmission-mail`, `zeroclaw-runtime`, `zwave-js-ui`.
 - Shared runtime networks: `docker_net`, `edge`, `infra`.
 <!-- END_DEPLOYED_OVERVIEW -->
 
@@ -106,108 +104,102 @@ These are the image build contexts currently present in the repo:
 ## Terraform Details
 
 <!-- BEGIN_TF_DOCS -->
+### Requirements
 
-## Requirements
+| Name | Version |
+|------|---------|
+| <a name="requirement_synology"></a> [synology](#requirement\_synology) | ~> 0.4 |
 
-| Name                                                                  | Version |
-| --------------------------------------------------------------------- | ------- |
-| <a name="requirement_synology"></a> [synology](#requirement_synology) | ~> 0.4  |
+### Providers
 
-## Providers
+| Name | Version |
+|------|---------|
+| <a name="provider_synology"></a> [synology](#provider\_synology) | 0.6.11 |
 
-| Name                                                            | Version |
-| --------------------------------------------------------------- | ------- |
-| <a name="provider_synology"></a> [synology](#provider_synology) | 0.6.11  |
+### Modules
 
-## Modules
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_bobine"></a> [bobine](#module\_bobine) | ./modules/compose_stack | n/a |
+| <a name="module_cloudflared"></a> [cloudflared](#module\_cloudflared) | ./modules/compose_stack | n/a |
+| <a name="module_dockge"></a> [dockge](#module\_dockge) | ./modules/compose_stack | n/a |
+| <a name="module_home_assistant"></a> [home\_assistant](#module\_home\_assistant) | ./modules/compose_stack | n/a |
+| <a name="module_homepage"></a> [homepage](#module\_homepage) | ./modules/compose_stack | n/a |
+| <a name="module_infra_db"></a> [infra\_db](#module\_infra\_db) | ./modules/compose_stack | n/a |
+| <a name="module_n8n"></a> [n8n](#module\_n8n) | ./modules/compose_stack | n/a |
+| <a name="module_transmission"></a> [transmission](#module\_transmission) | ./modules/compose_stack | n/a |
+| <a name="module_zeroclaw_cyrus"></a> [zeroclaw\_cyrus](#module\_zeroclaw\_cyrus) | ./modules/zeroclaw | n/a |
+| <a name="module_zeroclaw_lior"></a> [zeroclaw\_lior](#module\_zeroclaw\_lior) | ./modules/zeroclaw | n/a |
+| <a name="module_zwave_js_ui"></a> [zwave\_js\_ui](#module\_zwave\_js\_ui) | ./modules/compose_stack | n/a |
 
-| Name                                                                          | Source                  | Version |
-| ----------------------------------------------------------------------------- | ----------------------- | ------- |
-| <a name="module_bobine"></a> [bobine](#module_bobine)                         | ./modules/compose_stack | n/a     |
-| <a name="module_cloudflared"></a> [cloudflared](#module_cloudflared)          | ./modules/compose_stack | n/a     |
-| <a name="module_dockge"></a> [dockge](#module_dockge)                         | ./modules/compose_stack | n/a     |
-| <a name="module_home_assistant"></a> [home_assistant](#module_home_assistant) | ./modules/compose_stack | n/a     |
-| <a name="module_homepage"></a> [homepage](#module_homepage)                   | ./modules/compose_stack | n/a     |
-| <a name="module_infra_db"></a> [infra_db](#module_infra_db)                   | ./modules/compose_stack | n/a     |
-| <a name="module_n8n"></a> [n8n](#module_n8n)                                  | ./modules/compose_stack | n/a     |
-| <a name="module_transmission"></a> [transmission](#module_transmission)       | ./modules/compose_stack | n/a     |
-| <a name="module_uptime_kuma"></a> [uptime_kuma](#module_uptime_kuma)          | ./modules/compose_stack | n/a     |
-| <a name="module_zeroclaw_cyrus"></a> [zeroclaw_cyrus](#module_zeroclaw_cyrus) | ./modules/zeroclaw      | n/a     |
-| <a name="module_zeroclaw_lior"></a> [zeroclaw_lior](#module_zeroclaw_lior)    | ./modules/zeroclaw      | n/a     |
-| <a name="module_zwave_js_ui"></a> [zwave_js_ui](#module_zwave_js_ui)          | ./modules/compose_stack | n/a     |
+### Resources
 
-## Resources
-
-| Name                                                                                                                                                              | Type     |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| [synology_filestation_folder.bobine_local](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)          | resource |
-| [synology_filestation_folder.cloudflared](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)           | resource |
-| [synology_filestation_folder.dockge_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)           | resource |
+| Name | Type |
+|------|------|
+| [synology_filestation_folder.bobine_local](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.cloudflared](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.dockge_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 | [synology_filestation_folder.home_assistant_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
-| [synology_filestation_folder.homepage_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
-| [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)       | resource |
-| [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)              | resource |
-| [synology_filestation_folder.transmission_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)   | resource |
-| [synology_filestation_folder.uptime_kuma_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)      | resource |
-| [synology_filestation_folder.zwave_js_ui_store](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder)     | resource |
+| [synology_filestation_folder.homepage_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.infra_db_pgdata](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.n8n_data](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.transmission_config](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
+| [synology_filestation_folder.zwave_js_ui_store](https://registry.terraform.io/providers/synology-community/synology/latest/docs/resources/filestation_folder) | resource |
 
-## Inputs
+### Inputs
 
-| Name                                                                                                                                       | Description                                                                        | Type     | Default                                                                                    | Required |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------ | :------: |
-| <a name="input_adminer_url"></a> [adminer_url](#input_adminer_url)                                                                         | Browser-visible URL for Adminer, without a trailing slash                          | `string` | n/a                                                                                        |   yes    |
-| <a name="input_bobine_ed25519_private_key_hex"></a> [bobine_ed25519_private_key_hex](#input_bobine_ed25519_private_key_hex)                | Ed25519 private key hex for bobine                                                 | `string` | n/a                                                                                        |   yes    |
-| <a name="input_bobine_ed25519_public_key_hex"></a> [bobine_ed25519_public_key_hex](#input_bobine_ed25519_public_key_hex)                   | Ed25519 public key hex for bobine                                                  | `string` | n/a                                                                                        |   yes    |
-| <a name="input_bobine_url"></a> [bobine_url](#input_bobine_url)                                                                            | Browser-visible URL for bobine, without a trailing slash                           | `string` | n/a                                                                                        |   yes    |
-| <a name="input_cloudflared_image"></a> [cloudflared_image](#input_cloudflared_image)                                                       | Cloudflare Tunnel connector image                                                  | `string` | `"cloudflare/cloudflared:latest"`                                                          |    no    |
-| <a name="input_cloudflared_tunnel_token"></a> [cloudflared_tunnel_token](#input_cloudflared_tunnel_token)                                  | Token for the remotely managed Cloudflare Tunnel                                   | `string` | n/a                                                                                        |   yes    |
-| <a name="input_deploy_ssh_host"></a> [deploy_ssh_host](#input_deploy_ssh_host)                                                             | SSH host used by Ansible to apply rendered Compose stacks on the Synology NAS      | `string` | `null`                                                                                     |    no    |
-| <a name="input_deploy_ssh_port"></a> [deploy_ssh_port](#input_deploy_ssh_port)                                                             | SSH port used by Ansible to apply rendered Compose stacks on the Synology NAS      | `number` | `22`                                                                                       |    no    |
-| <a name="input_deploy_ssh_private_key_path"></a> [deploy_ssh_private_key_path](#input_deploy_ssh_private_key_path)                         | Path to the SSH private key used by Ansible to reach the Synology NAS              | `string` | n/a                                                                                        |   yes    |
-| <a name="input_deploy_ssh_strict_host_key_checking"></a> [deploy_ssh_strict_host_key_checking](#input_deploy_ssh_strict_host_key_checking) | Whether Ansible should enforce SSH host key checking when deploying Compose stacks | `bool`   | `false`                                                                                    |    no    |
-| <a name="input_deploy_ssh_user"></a> [deploy_ssh_user](#input_deploy_ssh_user)                                                             | SSH user used by Ansible to apply rendered Compose stacks on the Synology NAS      | `string` | `null`                                                                                     |    no    |
-| <a name="input_dockge_url"></a> [dockge_url](#input_dockge_url)                                                                            | Browser-visible URL for Dockge, without a trailing slash                           | `string` | n/a                                                                                        |   yes    |
-| <a name="input_dsm_host"></a> [dsm_host](#input_dsm_host)                                                                                  | The hostname of my Synology DSM instance                                           | `string` | n/a                                                                                        |   yes    |
-| <a name="input_dsm_password"></a> [dsm_password](#input_dsm_password)                                                                      | DSM password                                                                       | `string` | n/a                                                                                        |   yes    |
-| <a name="input_dsm_user"></a> [dsm_user](#input_dsm_user)                                                                                  | DSM username                                                                       | `string` | n/a                                                                                        |   yes    |
-| <a name="input_dsm_volume_projects"></a> [dsm_volume_projects](#input_dsm_volume_projects)                                                 | Root path for projects volume on DSM                                               | `string` | `"/projects"`                                                                              |    no    |
-| <a name="input_home_assistant_image"></a> [home_assistant_image](#input_home_assistant_image)                                              | Home Assistant Container image                                                     | `string` | `"ghcr.io/home-assistant/home-assistant:stable"`                                           |    no    |
-| <a name="input_home_assistant_url"></a> [home_assistant_url](#input_home_assistant_url)                                                    | Browser-visible URL for Home Assistant, without a trailing slash                   | `string` | n/a                                                                                        |   yes    |
-| <a name="input_homepage_allowed_hosts"></a> [homepage_allowed_hosts](#input_homepage_allowed_hosts)                                        | Comma-separated hostnames and host:port values allowed by Homepage                 | `string` | n/a                                                                                        |   yes    |
-| <a name="input_homepage_docker_socket_proxy_image"></a> [homepage_docker_socket_proxy_image](#input_homepage_docker_socket_proxy_image)    | Docker socket proxy image used by Homepage                                         | `string` | `"ghcr.io/tecnativa/docker-socket-proxy:v0.4.2"`                                           |    no    |
-| <a name="input_homepage_image"></a> [homepage_image](#input_homepage_image)                                                                | Homepage Docker image                                                              | `string` | `"ghcr.io/gethomepage/homepage:v1.12.2"`                                                   |    no    |
-| <a name="input_homepage_url"></a> [homepage_url](#input_homepage_url)                                                                      | Browser-visible URL for Homepage, without a trailing slash                         | `string` | n/a                                                                                        |   yes    |
-| <a name="input_n8n_encryption_key"></a> [n8n_encryption_key](#input_n8n_encryption_key)                                                    | Encryption key for n8n sensitive data                                              | `string` | `"my-32-character-random-string"`                                                          |    no    |
-| <a name="input_n8n_host"></a> [n8n_host](#input_n8n_host)                                                                                  | Host/IP that n8n should bind to (passed to the container as N8N_HOST)              | `string` | `"0.0.0.0"`                                                                                |    no    |
-| <a name="input_n8n_postgres_db"></a> [n8n_postgres_db](#input_n8n_postgres_db)                                                             | PostgreSQL database name for n8n                                                   | `string` | `"n8n-db-name"`                                                                            |    no    |
-| <a name="input_n8n_postgres_password"></a> [n8n_postgres_password](#input_n8n_postgres_password)                                           | PostgreSQL password for n8n                                                        | `string` | `"n8n-db-password"`                                                                        |    no    |
-| <a name="input_n8n_postgres_user"></a> [n8n_postgres_user](#input_n8n_postgres_user)                                                       | PostgreSQL username for n8n                                                        | `string` | `"n8n-db-user"`                                                                            |    no    |
-| <a name="input_n8n_url"></a> [n8n_url](#input_n8n_url)                                                                                     | Browser-visible URL for n8n, without a trailing slash                              | `string` | n/a                                                                                        |   yes    |
-| <a name="input_n8n_webhook_url"></a> [n8n_webhook_url](#input_n8n_webhook_url)                                                             | Public URL for n8n webhooks                                                        | `string` | `"localhost:5678"`                                                                         |    no    |
-| <a name="input_postgres_password"></a> [postgres_password](#input_postgres_password)                                                       | Password for the PostgreSQL service                                                | `string` | `"postgres-password"`                                                                      |    no    |
-| <a name="input_postgres_user"></a> [postgres_user](#input_postgres_user)                                                                   | Username for the PostgreSQL service                                                | `string` | `"postgres-user"`                                                                          |    no    |
-| <a name="input_transmission_downloads_path"></a> [transmission_downloads_path](#input_transmission_downloads_path)                         | Path used for Transmission downloads                                               | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_image"></a> [transmission_image](#input_transmission_image)                                                    | Transmission image with the SMTP completion-notification hook                      | `string` | `"ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248"`                                        |    no    |
-| <a name="input_transmission_mail_address"></a> [transmission_mail_address](#input_transmission_mail_address)                               | Sender address for Transmission completion notifications                           | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_mail_password"></a> [transmission_mail_password](#input_transmission_mail_password)                            | Mail credential for Transmission completion notifications                          | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_notification_to"></a> [transmission_notification_to](#input_transmission_notification_to)                      | Recipient address for Transmission completion notifications                        | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_password"></a> [transmission_password](#input_transmission_password)                                           | Password required by the Transmission RPC interface                                | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_username"></a> [transmission_username](#input_transmission_username)                                           | Username required by the Transmission RPC interface                                | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_vpn_image"></a> [transmission_vpn_image](#input_transmission_vpn_image)                                        | VPN gateway image routing Transmission through WireGuard                           | `string` | `"qmcgaw/gluetun@sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b"` |    no    |
-| <a name="input_transmission_vpn_service_provider"></a> [transmission_vpn_service_provider](#input_transmission_vpn_service_provider)       | Gluetun VPN service provider identifier                                            | `string` | n/a                                                                                        |   yes    |
-| <a name="input_transmission_wireguard_private_key"></a> [transmission_wireguard_private_key](#input_transmission_wireguard_private_key)    | WireGuard private key                                                              | `string` | n/a                                                                                        |   yes    |
-| <a name="input_uptime_kuma_image"></a> [uptime_kuma_image](#input_uptime_kuma_image)                                                       | Uptime Kuma Docker image                                                           | `string` | `"louislam/uptime-kuma:2"`                                                                 |    no    |
-| <a name="input_uptime_kuma_url"></a> [uptime_kuma_url](#input_uptime_kuma_url)                                                             | Browser-visible URL for Uptime Kuma, without a trailing slash                      | `string` | n/a                                                                                        |   yes    |
-| <a name="input_zeroclaw_cyrus_url"></a> [zeroclaw_cyrus_url](#input_zeroclaw_cyrus_url)                                                    | Browser-visible URL for ZeroClaw Cyrus, without a trailing slash                   | `string` | n/a                                                                                        |   yes    |
-| <a name="input_zeroclaw_image"></a> [zeroclaw_image](#input_zeroclaw_image)                                                                | Prebuilt ZeroClaw runtime image published to GHCR                                  | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04"`                                     |    no    |
-| <a name="input_zeroclaw_lior_url"></a> [zeroclaw_lior_url](#input_zeroclaw_lior_url)                                                       | Browser-visible URL for ZeroClaw Lior, without a trailing slash                    | `string` | n/a                                                                                        |   yes    |
-| <a name="input_zwave_js_ui_image"></a> [zwave_js_ui_image](#input_zwave_js_ui_image)                                                       | Z-Wave JS UI image                                                                 | `string` | `"zwavejs/zwave-js-ui:latest"`                                                             |    no    |
-| <a name="input_zwave_js_ui_url"></a> [zwave_js_ui_url](#input_zwave_js_ui_url)                                                             | Browser-visible URL for Z-Wave JS UI, without a trailing slash                     | `string` | n/a                                                                                        |   yes    |
-| <a name="input_zwave_js_ui_usb_device"></a> [zwave_js_ui_usb_device](#input_zwave_js_ui_usb_device)                                        | Z-Wave USB device path exposed to the Z-Wave JS UI container                       | `string` | `"/dev/ttyUSB0"`                                                                           |    no    |
-| <a name="input_zwave_js_ui_ws_published_port"></a> [zwave_js_ui_ws_published_port](#input_zwave_js_ui_ws_published_port)                   | Published port on the Synology host for the Z-Wave JS WebSocket server             | `number` | `3000`                                                                                     |    no    |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_adminer_url"></a> [adminer\_url](#input\_adminer\_url) | Browser-visible URL for Adminer, without a trailing slash | `string` | n/a | yes |
+| <a name="input_bobine_ed25519_private_key_hex"></a> [bobine\_ed25519\_private\_key\_hex](#input\_bobine\_ed25519\_private\_key\_hex) | Ed25519 private key hex for bobine | `string` | n/a | yes |
+| <a name="input_bobine_ed25519_public_key_hex"></a> [bobine\_ed25519\_public\_key\_hex](#input\_bobine\_ed25519\_public\_key\_hex) | Ed25519 public key hex for bobine | `string` | n/a | yes |
+| <a name="input_bobine_url"></a> [bobine\_url](#input\_bobine\_url) | Browser-visible URL for bobine, without a trailing slash | `string` | n/a | yes |
+| <a name="input_cloudflared_image"></a> [cloudflared\_image](#input\_cloudflared\_image) | Cloudflare Tunnel connector image | `string` | `"cloudflare/cloudflared:latest"` | no |
+| <a name="input_cloudflared_tunnel_token"></a> [cloudflared\_tunnel\_token](#input\_cloudflared\_tunnel\_token) | Token for the remotely managed Cloudflare Tunnel | `string` | n/a | yes |
+| <a name="input_deploy_ssh_host"></a> [deploy\_ssh\_host](#input\_deploy\_ssh\_host) | SSH host used by Ansible to apply rendered Compose stacks on the Synology NAS | `string` | `null` | no |
+| <a name="input_deploy_ssh_port"></a> [deploy\_ssh\_port](#input\_deploy\_ssh\_port) | SSH port used by Ansible to apply rendered Compose stacks on the Synology NAS | `number` | `22` | no |
+| <a name="input_deploy_ssh_private_key_path"></a> [deploy\_ssh\_private\_key\_path](#input\_deploy\_ssh\_private\_key\_path) | Path to the SSH private key used by Ansible to reach the Synology NAS | `string` | n/a | yes |
+| <a name="input_deploy_ssh_strict_host_key_checking"></a> [deploy\_ssh\_strict\_host\_key\_checking](#input\_deploy\_ssh\_strict\_host\_key\_checking) | Whether Ansible should enforce SSH host key checking when deploying Compose stacks | `bool` | `false` | no |
+| <a name="input_deploy_ssh_user"></a> [deploy\_ssh\_user](#input\_deploy\_ssh\_user) | SSH user used by Ansible to apply rendered Compose stacks on the Synology NAS | `string` | `null` | no |
+| <a name="input_dockge_url"></a> [dockge\_url](#input\_dockge\_url) | Browser-visible URL for Dockge, without a trailing slash | `string` | n/a | yes |
+| <a name="input_dsm_host"></a> [dsm\_host](#input\_dsm\_host) | The hostname of my Synology DSM instance | `string` | n/a | yes |
+| <a name="input_dsm_password"></a> [dsm\_password](#input\_dsm\_password) | DSM password | `string` | n/a | yes |
+| <a name="input_dsm_user"></a> [dsm\_user](#input\_dsm\_user) | DSM username | `string` | n/a | yes |
+| <a name="input_dsm_volume_projects"></a> [dsm\_volume\_projects](#input\_dsm\_volume\_projects) | Root path for projects volume on DSM | `string` | `"/projects"` | no |
+| <a name="input_home_assistant_image"></a> [home\_assistant\_image](#input\_home\_assistant\_image) | Home Assistant Container image | `string` | `"ghcr.io/home-assistant/home-assistant:stable"` | no |
+| <a name="input_home_assistant_url"></a> [home\_assistant\_url](#input\_home\_assistant\_url) | Browser-visible URL for Home Assistant, without a trailing slash | `string` | n/a | yes |
+| <a name="input_homepage_allowed_hosts"></a> [homepage\_allowed\_hosts](#input\_homepage\_allowed\_hosts) | Comma-separated hostnames and host:port values allowed by Homepage | `string` | n/a | yes |
+| <a name="input_homepage_docker_socket_proxy_image"></a> [homepage\_docker\_socket\_proxy\_image](#input\_homepage\_docker\_socket\_proxy\_image) | Docker socket proxy image used by Homepage | `string` | `"ghcr.io/tecnativa/docker-socket-proxy:v0.4.2"` | no |
+| <a name="input_homepage_image"></a> [homepage\_image](#input\_homepage\_image) | Homepage Docker image | `string` | `"ghcr.io/gethomepage/homepage:v1.12.2"` | no |
+| <a name="input_homepage_url"></a> [homepage\_url](#input\_homepage\_url) | Browser-visible URL for Homepage, without a trailing slash | `string` | n/a | yes |
+| <a name="input_n8n_encryption_key"></a> [n8n\_encryption\_key](#input\_n8n\_encryption\_key) | Encryption key for n8n sensitive data | `string` | `"my-32-character-random-string"` | no |
+| <a name="input_n8n_host"></a> [n8n\_host](#input\_n8n\_host) | Host/IP that n8n should bind to (passed to the container as N8N\_HOST) | `string` | `"0.0.0.0"` | no |
+| <a name="input_n8n_postgres_db"></a> [n8n\_postgres\_db](#input\_n8n\_postgres\_db) | PostgreSQL database name for n8n | `string` | `"n8n-db-name"` | no |
+| <a name="input_n8n_postgres_password"></a> [n8n\_postgres\_password](#input\_n8n\_postgres\_password) | PostgreSQL password for n8n | `string` | `"n8n-db-password"` | no |
+| <a name="input_n8n_postgres_user"></a> [n8n\_postgres\_user](#input\_n8n\_postgres\_user) | PostgreSQL username for n8n | `string` | `"n8n-db-user"` | no |
+| <a name="input_n8n_url"></a> [n8n\_url](#input\_n8n\_url) | Browser-visible URL for n8n, without a trailing slash | `string` | n/a | yes |
+| <a name="input_n8n_webhook_url"></a> [n8n\_webhook\_url](#input\_n8n\_webhook\_url) | Public URL for n8n webhooks | `string` | `"localhost:5678"` | no |
+| <a name="input_postgres_password"></a> [postgres\_password](#input\_postgres\_password) | Password for the PostgreSQL service | `string` | `"postgres-password"` | no |
+| <a name="input_postgres_user"></a> [postgres\_user](#input\_postgres\_user) | Username for the PostgreSQL service | `string` | `"postgres-user"` | no |
+| <a name="input_transmission_downloads_path"></a> [transmission\_downloads\_path](#input\_transmission\_downloads\_path) | Path used for Transmission downloads | `string` | n/a | yes |
+| <a name="input_transmission_image"></a> [transmission\_image](#input\_transmission\_image) | Transmission image with the SMTP completion-notification hook | `string` | `"ghcr.io/ccamel/transmission-mail:4.0.6-r0-ls248"` | no |
+| <a name="input_transmission_mail_address"></a> [transmission\_mail\_address](#input\_transmission\_mail\_address) | Sender address for Transmission completion notifications | `string` | n/a | yes |
+| <a name="input_transmission_mail_password"></a> [transmission\_mail\_password](#input\_transmission\_mail\_password) | Mail credential for Transmission completion notifications | `string` | n/a | yes |
+| <a name="input_transmission_notification_to"></a> [transmission\_notification\_to](#input\_transmission\_notification\_to) | Recipient address for Transmission completion notifications | `string` | n/a | yes |
+| <a name="input_transmission_password"></a> [transmission\_password](#input\_transmission\_password) | Password required by the Transmission RPC interface | `string` | n/a | yes |
+| <a name="input_transmission_username"></a> [transmission\_username](#input\_transmission\_username) | Username required by the Transmission RPC interface | `string` | n/a | yes |
+| <a name="input_transmission_vpn_image"></a> [transmission\_vpn\_image](#input\_transmission\_vpn\_image) | VPN gateway image routing Transmission through WireGuard | `string` | `"qmcgaw/gluetun@sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b"` | no |
+| <a name="input_transmission_vpn_service_provider"></a> [transmission\_vpn\_service\_provider](#input\_transmission\_vpn\_service\_provider) | Gluetun VPN service provider identifier | `string` | n/a | yes |
+| <a name="input_transmission_wireguard_private_key"></a> [transmission\_wireguard\_private\_key](#input\_transmission\_wireguard\_private\_key) | WireGuard private key | `string` | n/a | yes |
+| <a name="input_zeroclaw_cyrus_url"></a> [zeroclaw\_cyrus\_url](#input\_zeroclaw\_cyrus\_url) | Browser-visible URL for ZeroClaw Cyrus, without a trailing slash | `string` | n/a | yes |
+| <a name="input_zeroclaw_image"></a> [zeroclaw\_image](#input\_zeroclaw\_image) | Prebuilt ZeroClaw runtime image published to GHCR | `string` | `"ghcr.io/ccamel/zeroclaw-runtime:v0.8.5-ubuntu24.04"` | no |
+| <a name="input_zeroclaw_lior_url"></a> [zeroclaw\_lior\_url](#input\_zeroclaw\_lior\_url) | Browser-visible URL for ZeroClaw Lior, without a trailing slash | `string` | n/a | yes |
+| <a name="input_zwave_js_ui_image"></a> [zwave\_js\_ui\_image](#input\_zwave\_js\_ui\_image) | Z-Wave JS UI image | `string` | `"zwavejs/zwave-js-ui:latest"` | no |
+| <a name="input_zwave_js_ui_url"></a> [zwave\_js\_ui\_url](#input\_zwave\_js\_ui\_url) | Browser-visible URL for Z-Wave JS UI, without a trailing slash | `string` | n/a | yes |
+| <a name="input_zwave_js_ui_usb_device"></a> [zwave\_js\_ui\_usb\_device](#input\_zwave\_js\_ui\_usb\_device) | Z-Wave USB device path exposed to the Z-Wave JS UI container | `string` | `"/dev/ttyUSB0"` | no |
+| <a name="input_zwave_js_ui_ws_published_port"></a> [zwave\_js\_ui\_ws\_published\_port](#input\_zwave\_js\_ui\_ws\_published\_port) | Published port on the Synology host for the Z-Wave JS WebSocket server | `number` | `3000` | no |
 
-## Outputs
+### Outputs
 
 No outputs.
-
 <!-- END_TF_DOCS -->
