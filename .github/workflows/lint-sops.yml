@@ -1,0 +1,36 @@
+name: Lint / SOPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/lint-sops.yml'
+      - '.github/scripts/check_sops_env.py'
+      - '.github/scripts/test_check_sops_env.py'
+      - '.env.sops'
+      - '.sops.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/lint-sops.yml'
+      - '.github/scripts/check_sops_env.py'
+      - '.github/scripts/test_check_sops_env.py'
+      - '.env.sops'
+      - '.sops.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: lint-sops-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-sops:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check encrypted dotenv structure
+        run: |
+          python3 .github/scripts/check_sops_env.py
+          python3 -m unittest discover -s .github/scripts -p 'test_check_sops_env.py'
