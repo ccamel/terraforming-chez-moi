@@ -29,6 +29,7 @@
           default = pkgs.mkShell {
             packages = [
               pkgs.actionlint
+              pkgs.age
               pkgs.ansible
               pkgs.ansible-lint
               pkgs.ansible-language-server
@@ -48,6 +49,7 @@
               pkgs.shellcheck
               pkgs.deadnix
               pkgs.nixfmt
+              pkgs.sops
               pkgs.statix
               pkgs.terraform
               pkgs.tflint
