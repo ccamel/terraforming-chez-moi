@@ -1,3 +1,9 @@
+variable "transmission_rpc_published_port" {
+  description = "Published localhost port for the Transmission RPC interface"
+  type        = number
+  default     = 9091
+}
+
 variable "transmission_downloads_path" {
   description = "Path used for Transmission downloads"
   type        = string

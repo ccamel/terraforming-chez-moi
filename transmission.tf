@@ -19,9 +19,10 @@ module "transmission" {
   ssh_private_key_path         = var.deploy_ssh_private_key_path
   ssh_strict_host_key_checking = var.deploy_ssh_strict_host_key_checking
   compose_yaml = templatefile("${path.module}/templates/transmission.compose.yaml.tftpl", {
-    transmission_image          = var.transmission_image
-    transmission_vpn_image      = var.transmission_vpn_image
-    transmission_downloads_path = var.transmission_downloads_path
+    transmission_image              = var.transmission_image
+    transmission_vpn_image          = var.transmission_vpn_image
+    transmission_downloads_path     = var.transmission_downloads_path
+    transmission_rpc_published_port = var.transmission_rpc_published_port
   })
   external_networks = [
     {
