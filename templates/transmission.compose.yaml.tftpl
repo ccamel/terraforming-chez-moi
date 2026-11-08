@@ -29,6 +29,7 @@ services:
   transmission:
     image: ${transmission_image}
     container_name: transmission
+    entrypoint: ["/bin/sh", "-c", "grep -q ' /downloads cifs ' /proc/mounts || { echo 'CIFS download mount is missing' >&2; exit 1; }; exec /init"]
     volumes:
       - ./config:/config
       - ${transmission_downloads_path}:/downloads
@@ -45,7 +46,7 @@ services:
     depends_on:
       gluetun:
         condition: service_healthy
-    restart: unless-stopped
+    restart: "no"
     logging:
       driver: json-file
 

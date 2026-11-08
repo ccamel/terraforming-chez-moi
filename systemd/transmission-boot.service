@@ -5,7 +5,6 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-RemainAfterExit=yes
 StartLimitInterval=0
 ExecStart=/bin/sh /usr/local/sbin/transmission-start-on-boot.sh
 Restart=on-failure

@@ -10,5 +10,12 @@ if [ ! -c /dev/net/tun ]; then
   chmod 600 /dev/net/tun
 fi
 
+if ! grep -q ' /volume1/docker/download cifs ' /proc/mounts; then
+  /usr/syno/bin/synomount --resume
+fi
+grep -q ' /volume1/docker/download cifs ' /proc/mounts
+
 cd /volume1/projects/transmission
-exec /usr/bin/docker compose -p transmission up -d
+/usr/bin/docker compose -p transmission up -d
+/usr/bin/docker wait transmission >/dev/null
+exit 1

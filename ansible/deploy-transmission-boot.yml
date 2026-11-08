@@ -1,0 +1,38 @@
+---
+- name: Install Transmission startup service
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Install startup script
+      ansible.builtin.copy:
+        src: ../systemd/transmission-start-on-boot.sh
+        dest: /usr/local/sbin/transmission-start-on-boot.sh
+        owner: root
+        group: root
+        mode: "0755"
+      notify: Restart Transmission startup service
+
+    - name: Install systemd unit
+      ansible.builtin.copy:
+        src: ../systemd/transmission-boot.service
+        dest: /etc/systemd/system/transmission-boot.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart Transmission startup service
+
+    - name: Enable Transmission startup service
+      ansible.builtin.systemd_service:
+        name: transmission-boot.service
+        daemon_reload: true
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart Transmission startup service
+      ansible.builtin.systemd_service:
+        name: transmission-boot.service
+        daemon_reload: true
+        state: restarted
