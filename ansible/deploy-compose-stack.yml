@@ -41,6 +41,7 @@
       loop: "{{ stack_spec.extra_files }}"
       loop_control:
         label: "{{ item.path }}"
+      no_log: true
 
 
     - name: Ensure required external Docker networks exist
