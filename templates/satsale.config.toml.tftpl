@@ -1,0 +1,12 @@
+payment_methods = ["xpub"]
+
+[xpub]
+xpub = ${jsonencode(xpub)}
+bip = ${jsonencode(bip)}
+
+[satsale]
+api_key_path = "/data/SatSale_API_key"
+supported_currencies = ["BTC"]
+base_currency = "sats"
+loglevel = "WARNING"
+redirect = "https://github.com/ccamel/terraforming-chez-moi"
