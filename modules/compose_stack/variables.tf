@@ -29,6 +29,7 @@ variable "ssh_port" {
   description = "SSH port used by Ansible to apply the Compose stack"
   type        = number
   default     = 22
+  sensitive   = true
 }
 
 variable "ssh_private_key_path" {

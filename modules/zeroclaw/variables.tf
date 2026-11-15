@@ -57,6 +57,7 @@ variable "deploy_ssh_port" {
   description = "SSH port used by Ansible to apply rendered Compose stacks"
   type        = number
   default     = 22
+  sensitive   = true
 }
 
 variable "deploy_ssh_private_key_path" {
