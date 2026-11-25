@@ -27,7 +27,7 @@ services:
         exec mosquitto -c /mosquitto/config/mosquitto.conf
     healthcheck:
       test: ["CMD-SHELL", "mosquitto_sub -h 127.0.0.1 -u homeassistant -P \"$$MQTT_HOMEASSISTANT_PASSWORD\" -t '$$SYS/broker/version' -C 1 -W 5 >/dev/null"]
-      interval: 30s
+      interval: 2m
       timeout: 10s
       retries: 3
     depends_on:
